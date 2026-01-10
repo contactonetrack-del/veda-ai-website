@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
-import { getCurrentUser, logout, sendGuestMessage, getSavedLanguage, SUPPORTED_LANGUAGES } from '../services/api'
+import { getCurrentUser, logout, sendGuestMessage, sendOrchestratedMessage, getSavedLanguage, SUPPORTED_LANGUAGES } from '../services/api'
 import { logError, logEvent } from '../utils/errorLogger'
 import LanguageSelector from '../components/LanguageSelector'
+import { SourcesCitation, AgentBadge } from '../components/SourcesCitation'
 import {
     Menu,
     X,
@@ -120,21 +121,35 @@ function ChatPage() {
         }
 
         try {
-            // Use Groq API for guests with selected language (now unified with mobile!)
+            // Use orchestrated AI for authenticated users, Groq for guests
             let aiResponse
+            let sources = []
+            let agentUsed = null
+            let intent = null
+
             if (user?.isGuest) {
                 // Guest: Direct Groq call with language support
                 aiResponse = await sendGuestMessage(currentInput, selectedLanguage, messages)
             } else {
-                // Authenticated: Use backend API (falls back to Groq for now)
-                aiResponse = await sendGuestMessage(currentInput, selectedLanguage, messages)
+                // Authenticated: Use orchestrator with multi-agent + web search
+                const result = await sendOrchestratedMessage(currentInput, user?.id || 'guest')
+                aiResponse = result.response
+                sources = result.sources || []
+                agentUsed = result.agentUsed
+                intent = result.intent
             }
 
-            setMessages(prev => [...prev, { role: 'assistant', content: aiResponse }])
+            setMessages(prev => [...prev, {
+                role: 'assistant',
+                content: aiResponse,
+                sources: sources,
+                agentUsed: agentUsed,
+                intent: intent
+            }])
 
             // Save to history
             if (currentChatId) {
-                updateChatInHistory(currentChatId, [...messages, userMessage, { role: 'assistant', content: aiResponse }])
+                updateChatInHistory(currentChatId, [...messages, userMessage, { role: 'assistant', content: aiResponse, sources }])
             }
         } catch (error) {
             logError('chat', error, { language: selectedLanguage, isGuest: user?.isGuest });
@@ -281,7 +296,17 @@ function ChatPage() {
                             </div>
                             <div className="message-content">
                                 {msg.role === 'assistant' ? (
-                                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                                    <>
+                                        <div className="message-header">
+                                            <ReactMarkdown>{msg.content}</ReactMarkdown>
+                                            {msg.agentUsed && (
+                                                <AgentBadge agent={msg.agentUsed} intent={msg.intent} />
+                                            )}
+                                        </div>
+                                        {msg.sources && msg.sources.length > 0 && (
+                                            <SourcesCitation sources={msg.sources} />
+                                        )}
+                                    </>
                                 ) : (
                                     msg.content
                                 )}

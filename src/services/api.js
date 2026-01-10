@@ -115,6 +115,63 @@ export async function sendMessage(chatId, content) {
     });
 }
 
+// ==================== ORCHESTRATOR API (Phase 1: Perplexity-class) ====================
+
+/**
+ * Send message through the multi-agent orchestrator.
+ * Uses backend AI with web search capabilities.
+ * 
+ * @param {string} message - User's query
+ * @param {string} userId - User ID (optional, defaults to 'guest')
+ * @returns {Object} Response with citations and metadata
+ */
+export async function sendOrchestratedMessage(message, userId = 'guest') {
+    try {
+        const data = await apiRequest('/orchestrator/query', {
+            method: 'POST',
+            body: JSON.stringify({
+                message,
+                user_id: userId,
+                context: {}
+            }),
+        });
+
+        return {
+            response: data.response,
+            intent: data.intent,
+            agentUsed: data.agent_used,
+            sources: data.sources || [],
+            reviewed: data.reviewed,
+            contextUsed: data.context_used,
+            timestamp: data.timestamp,
+            success: true
+        };
+    } catch (error) {
+        console.error('[Orchestrator] Error:', error);
+        return {
+            response: "I'm having trouble processing your request. Please try again.",
+            intent: 'error',
+            agentUsed: null,
+            sources: [],
+            success: false,
+            error: error.message
+        };
+    }
+}
+
+/**
+ * Get orchestrator status and available agents.
+ */
+export async function getOrchestratorStatus() {
+    try {
+        return await apiRequest('/orchestrator/status');
+    } catch (error) {
+        console.error('[Orchestrator] Status check failed:', error);
+        return { status: 'unavailable', error: error.message };
+    }
+}
+
+
 // ==================== GUEST AI (Groq - Same as Mobile) ====================
 
 // Supported Languages (Zone-wise) - Matches mobile app
@@ -321,6 +378,8 @@ export default {
     createChat,
     getChatMessages,
     sendMessage,
+    sendOrchestratedMessage,
+    getOrchestratorStatus,
     sendGuestMessage,
     analyzeFoodImage,
     getVisionRateLimitStatus,
