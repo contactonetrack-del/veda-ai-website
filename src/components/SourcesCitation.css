@@ -1,5 +1,28 @@
 /* Citations/Sources Display Component */
 
+/* Verification Badge (Phase 2) */
+.verification-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    border: 1px solid;
+}
+
+.verification-badge.verified {
+    background: rgba(34, 197, 94, 0.15);
+    border-color: rgba(34, 197, 94, 0.4);
+    color: rgba(34, 197, 94, 1);
+}
+
+.verification-badge svg {
+    flex-shrink: 0;
+}
+
 .sources-container {
     margin-top: 12px;
     padding-top: 12px;

@@ -126,6 +126,8 @@ function ChatPage() {
             let sources = []
             let agentUsed = null
             let intent = null
+            let verified = false
+            let confidence = 0.0
 
             if (user?.isGuest) {
                 // Guest: Direct Groq call with language support
@@ -137,6 +139,8 @@ function ChatPage() {
                 sources = result.sources || []
                 agentUsed = result.agentUsed
                 intent = result.intent
+                verified = result.verified || false
+                confidence = result.confidence || 0.0
             }
 
             setMessages(prev => [...prev, {
@@ -144,7 +148,9 @@ function ChatPage() {
                 content: aiResponse,
                 sources: sources,
                 agentUsed: agentUsed,
-                intent: intent
+                intent: intent,
+                verified: verified,
+                confidence: confidence
             }])
 
             // Save to history
@@ -304,7 +310,11 @@ function ChatPage() {
                                             )}
                                         </div>
                                         {msg.sources && msg.sources.length > 0 && (
-                                            <SourcesCitation sources={msg.sources} />
+                                            <SourcesCitation
+                                                sources={msg.sources}
+                                                verified={msg.verified}
+                                                confidence={msg.confidence}
+                                            />
                                         )}
                                     </>
                                 ) : (

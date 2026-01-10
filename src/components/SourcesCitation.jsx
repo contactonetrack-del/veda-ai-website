@@ -10,7 +10,13 @@ import './SourcesCitation.css';
 /**
  * Display source citations from search results
  */
-export function SourcesCitation({ sources = [], isFallback = false, fallbackReason = '' }) {
+export function SourcesCitation({
+    sources = [],
+    isFallback = false,
+    fallbackReason = '',
+    verified = false,
+    confidence = 0.0
+}) {
     // Filter out sources without URLs (like AI summaries)
     const citableSources = sources.filter(s => s.url);
 
@@ -20,6 +26,16 @@ export function SourcesCitation({ sources = [], isFallback = false, fallbackReas
 
     return (
         <div className="sources-container">
+            {verified && confidence >= 0.6 && (
+                <div className="verification-badge verified">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    <span>Fact-Checked ({Math.round(confidence * 100)}% confidence)</span>
+                </div>
+            )}
+
             {citableSources.length > 0 && (
                 <>
                     <div className="sources-header">
