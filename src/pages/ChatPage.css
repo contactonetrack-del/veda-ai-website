@@ -247,14 +247,19 @@
 }
 
 .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.topbar-actions .icon-btn {
     color: var(--text-dim);
-    cursor: pointer;
     padding: 8px;
     border-radius: 8px;
     transition: var(--transition);
 }
 
-.topbar-actions:hover {
+.topbar-actions .icon-btn:hover {
     background: rgba(255, 255, 255, 0.1);
     color: var(--highlight);
 }
