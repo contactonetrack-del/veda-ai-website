@@ -9,10 +9,8 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://veda-ai-backend-ql
 const API_V1 = `${API_BASE_URL}/api/v1`;
 
 // Groq API for guest mode (same as mobile for consistency)
-// Groq API for guest mode (same as mobile for consistency)
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
-// Gemini API for Vision
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+// Note: Gemini Vision API is now proxied through backend for security
 
 // Store access token in memory (more secure than localStorage for tokens)
 let accessToken = localStorage.getItem('veda_token') || null;
@@ -250,91 +248,65 @@ export function saveLanguage(code) {
     localStorage.setItem('veda_language', code);
 }
 
+/**
+ * Analyze food image using backend Vision API proxy.
+ * This is SECURE - API key is kept on backend, not exposed in frontend.
+ * Rate limited: 5 analyses per hour.
+ */
 export async function analyzeFoodImage(base64Image) {
-    if (!GEMINI_API_KEY || GEMINI_API_KEY.includes('PLACE_YOUR')) {
-        throw new Error('Gemini API Key is missing. Please update .env file.');
-    }
-
-    const GEMINI_VISION_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
-
-    // Nutrition Expert Prompt
-    const FOOD_ANALYSIS_PROMPT = `You are a nutrition expert specializing in Indian cuisine. Analyze this image of a meal.
-
-Identify all food items visible and for each provide:
-1. Name in English
-2. Name in Hindi
-3. Estimated portion size
-4. Approximate calories
-5. Protein in grams
-6. Carbohydrates in grams
-7. Fat in grams
-
-Common Indian foods reference:
-- Roti/Chapati: ~70-100 kcal each
-- Rice (1 cup): ~200 kcal
-- Dal (1 bowl): ~150 kcal
-- Sabzi (vegetables): ~80-120 kcal
-- Paneer curry: ~250-300 kcal
-
-Respond ONLY with valid JSON in this exact format:
-{
-  "foods": [
-    {"name": "Roti", "nameHindi": "रोटी", "portion": "2 pieces", "calories": 140, "protein": 4, "carbs": 30, "fat": 1}
-  ],
-  "totalCalories": 140,
-  "totalProtein": 4,
-  "totalCarbs": 30,
-  "totalFat": 1,
-  "healthTips": "Your meal is balanced. Consider adding more vegetables for fiber."
-}`;
-
     try {
-        const response = await fetch(`${GEMINI_VISION_URL}?key=${GEMINI_API_KEY}`, {
+        const response = await fetch(`${API_V1}/vision/analyze-food`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [
-                        { text: FOOD_ANALYSIS_PROMPT },
-                        {
-                            inline_data: {
-                                mime_type: 'image/jpeg',
-                                data: base64Image
-                            }
-                        }
-                    ]
-                }],
-                generationConfig: {
-                    temperature: 0.4,
-                    maxOutputTokens: 2048,
-                }
-            })
+            body: JSON.stringify({ image: base64Image })
         });
+
+        if (response.status === 429) {
+            const error = await response.json();
+            throw new Error(error.detail?.message || 'Rate limit exceeded. You can analyze 5 images per hour.');
+        }
 
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.error?.message || 'Failed to analyze image');
+            throw new Error(error.detail || 'Failed to analyze image');
         }
 
         const data = await response.json();
-        const textContent = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
-        if (!textContent) throw new Error('No analysis generated.');
-
-        // Extract JSON using Regex
-        let jsonStr = textContent;
-        const jsonMatch = textContent.match(/```json\n?([\s\S]*?)\n?```/);
-        if (jsonMatch) jsonStr = jsonMatch[1];
-        else {
-            const objMatch = textContent.match(/\{[\s\S]*\}/);
-            if (objMatch) jsonStr = objMatch[0];
-        }
-
-        return JSON.parse(jsonStr);
+        // Transform backend response to match expected format
+        return {
+            foods: data.foods?.map(f => ({
+                name: f.name,
+                nameHindi: f.name_hindi,
+                portion: '1 serving',
+                calories: f.calories,
+                protein: f.protein,
+                carbs: f.carbs,
+                fat: f.fat
+            })) || [],
+            totalCalories: data.total_calories,
+            totalProtein: data.total_protein,
+            totalCarbs: data.total_carbs,
+            totalFat: data.total_fat,
+            healthTips: data.health_tips?.join(' ') || '',
+            rateLimitRemaining: data.rate_limit_remaining
+        };
 
     } catch (error) {
-        console.error('Vision API Error:', error);
+        console.error('[VEDA-ERROR] Vision API:', error.message);
         throw error;
+    }
+}
+
+/**
+ * Check current rate limit status for vision analysis.
+ */
+export async function getVisionRateLimitStatus() {
+    try {
+        const response = await fetch(`${API_V1}/vision/rate-limit-status`);
+        return response.json();
+    } catch (error) {
+        return { remaining: 5, limit: 5 };
     }
 }
 
@@ -351,6 +323,7 @@ export default {
     sendMessage,
     sendGuestMessage,
     analyzeFoodImage,
+    getVisionRateLimitStatus,
     SUPPORTED_LANGUAGES,
     getLanguageByZone,
     getSavedLanguage,
