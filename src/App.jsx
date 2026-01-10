@@ -2,6 +2,7 @@ import React, { useState, useEffect, lazy, Suspense } from 'react'
 import { Routes, Route, useNavigate } from 'react-router-dom'
 import './App.css'
 import AuthModal from './components/AuthModal'
+import ProtectedRoute from './components/ProtectedRoute'
 import ChatPage from './pages/ChatPage'
 import { useAuth } from './contexts/AuthContext'
 import {
@@ -158,12 +159,24 @@ function App() {
     <Suspense fallback={<div className="loading-screen">Loading...</div>}>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/chat" element={<ChatPage />} />
+        <Route path="/chat" element={
+          <ProtectedRoute>
+            <ChatPage />
+          </ProtectedRoute>
+        } />
         <Route path="/tools" element={<ToolsPage />} />
         <Route path="/calorie-counter" element={<CalorieCounterPage />} />
         <Route path="/insurance" element={<InsuranceEstimatorPage />} />
-        <Route path="/snap-thali" element={<SnapThaliPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/snap-thali" element={
+          <ProtectedRoute>
+            <SnapThaliPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        } />
       </Routes>
     </Suspense>
   )
