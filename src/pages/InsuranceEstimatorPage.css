@@ -1,0 +1,682 @@
+/* Insurance Estimator Page Styles */
+
+.insurance-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0A0F1C 0%, #1A1F2E 50%, #0A0F1C 100%);
+    color: white;
+}
+
+.insurance-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.insurance-header h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #10B981, #3B82F6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.back-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-2px);
+}
+
+.insurance-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    /* Two columns: Main Content + Sidebar */
+    gap: 24px;
+    align-items: start;
+}
+
+/* On mobile, stack them */
+@media (max-width: 900px) {
+    .insurance-content {
+        grid-template-columns: 1fr;
+        max-width: 600px;
+    }
+}
+
+/* Info Card */
+.info-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 24px;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(59, 130, 246, 0.15));
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 24px;
+    margin-bottom: 20px;
+}
+
+.info-icon {
+    color: #10B981;
+    flex-shrink: 0;
+}
+
+.info-text h2 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.info-text p {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.5;
+}
+
+/* Calculator Form */
+.calculator-form {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 28px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 12px;
+}
+
+.form-group label svg {
+    color: #8B5CF6;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #8B5CF6;
+    background: rgba(139, 92, 246, 0.1);
+}
+
+/* Stepper */
+.stepper {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.stepper button {
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.stepper button:hover:not(:disabled) {
+    background: rgba(139, 92, 246, 0.3);
+    border-color: rgba(139, 92, 246, 0.5);
+}
+
+.stepper button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.stepper span {
+    font-size: 1.5rem;
+    font-weight: 600;
+    min-width: 40px;
+    text-align: center;
+}
+
+/* Coverage Options */
+.coverage-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.coverage-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid transparent;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.coverage-option:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.coverage-name {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 4px;
+}
+
+.coverage-amount {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.coverage-option .check {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+
+/* Calculate Button */
+.calculate-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px;
+    background: linear-gradient(135deg, #10B981, #3B82F6);
+    border: none;
+    border-radius: 16px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.calculate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+}
+
+/* Results Card */
+.results-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid;
+    border-radius: 24px;
+    padding: 28px;
+    margin-bottom: 20px;
+    animation: resultSlideIn 0.5s ease;
+}
+
+@keyframes resultSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.results-card h3 {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.premium-display {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.premium-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.premium-main svg {
+    color: #10B981;
+}
+
+.premium-main .amount {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: white;
+}
+
+.premium-main .period {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.premium-monthly {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.result-details {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 16px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.detail-row span:first-child {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.detail-row span:last-child {
+    font-weight: 600;
+}
+
+.detail-row.savings .save-amount {
+    color: #10B981;
+}
+
+.disclaimer {
+    margin-top: 16px;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.4);
+    font-style: italic;
+}
+
+/* Tips Card */
+.tips-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 24px;
+}
+
+.tips-card h3 {
+    font-size: 1rem;
+    margin-bottom: 16px;
+}
+
+.tips-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.tips-card li {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    padding-left: 20px;
+    position: relative;
+}
+
+.tips-card li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #10B981;
+}
+
+.tips-card li:last-child {
+    border-bottom: none;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .insurance-content {
+        grid-template-columns: 1fr;
+        max-width: 600px;
+    }
+
+    .stats-row {
+        flex-direction: column;
+    }
+
+    .coverage-options {
+        grid-template-columns: 1fr;
+    }
+
+    .premium-main .amount {
+        font-size: 2rem;
+    }
+}
+
+/* Stats Row */
+.stats-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.stat-item {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+}
+
+.stat-item svg {
+    color: #10B981;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: white;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Input Hint */
+.input-hint {
+    display: block;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: 8px;
+}
+
+/* Toggle Switch */
+.toggle-group {
+    padding-top: 8px;
+}
+
+.toggle-switch {
+    display: flex;
+    gap: 8px;
+}
+
+.toggle-switch button {
+    flex: 1;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.toggle-switch button:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.toggle-switch button.active {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(59, 130, 246, 0.3));
+    border-color: rgba(16, 185, 129, 0.5);
+    color: white;
+    font-weight: 600;
+}
+
+/* Plan Benefits */
+.plan-benefits {
+    margin-top: 16px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+}
+
+.plan-benefits strong {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.plan-benefits ul {
+    margin: 8px 0 0;
+    padding-left: 20px;
+}
+
+.plan-benefits li {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 4px 0;
+}
+
+/* Sidebar Column */
+.insurance-sidebar-column {
+    position: sticky;
+    top: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    /* Force spacing between cards */
+}
+
+/* Placeholder Card */
+.placeholder-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 40px 24px;
+    text-align: center;
+    /* Removed margin-bottom since parent has gap */
+}
+
+/* Tips Card - ensure no negative margins */
+.tips-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 24px;
+    /* Removed margin-bottom since parent has gap */
+}
+
+.placeholder-icon {
+    color: rgba(255, 255, 255, 0.2);
+    margin-bottom: 16px;
+}
+
+.placeholder-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.placeholder-card p {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Result Header */
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.result-badge {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Result Benefits */
+.result-benefits {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.result-benefits strong {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.benefits-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.benefit-tag {
+    padding: 6px 14px;
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: #10B981;
+}
+
+/* Terms Section */
+.terms-section {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.terms-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 16px;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-align: left;
+}
+
+.terms-toggle:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.terms-toggle svg {
+    color: #3B82F6;
+}
+
+.terms-toggle span:first-of-type {
+    flex: 1;
+}
+
+.terms-toggle .arrow {
+    transition: transform 0.2s;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.terms-toggle .arrow.open {
+    transform: rotate(180deg);
+}
+
+.terms-content {
+    padding: 0 16px 16px;
+    animation: slideDown 0.3s ease;
+}
+
+.term-more {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.3);
+    text-align: center;
+    margin-top: 8px;
+    font-style: italic;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.term-item {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.term-item:last-child {
+    border-bottom: none;
+}
+
+.term-name {
+    display: block;
+    font-weight: 600;
+    color: #10B981;
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+}
+
+.term-desc {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.4;
+}
+
+/* IRDAI Notice Sidebar */
+.irdai-notice-sidebar {
+    text-align: center;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.irdai-notice-sidebar strong {
+    color: rgba(255, 255, 255, 0.6);
+}

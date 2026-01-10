@@ -1,0 +1,297 @@
+/* SnapThaliPage.css */
+
+.snap-thali-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #f8fafc;
+    padding-bottom: 80px;
+}
+
+.snap-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(12px);
+    background: rgba(15, 23, 42, 0.8);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.snap-header h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.snap-content {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+/* Upload Section */
+.upload-section {
+    padding: 2rem;
+    border-radius: 24px;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.upload-area {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.upload-area:hover {
+    transform: scale(1.02);
+}
+
+.upload-icon-circle {
+    width: 80px;
+    height: 80px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: #3b82f6;
+}
+
+.upload-area h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.upload-area p {
+    color: #94a3b8;
+    margin-bottom: 2rem;
+}
+
+.upload-btn {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+/* Preview Area */
+.preview-area {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.image-container {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.image-container img {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    display: block;
+}
+
+.remove-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.analyze-btn {
+    background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.analyze-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
+}
+
+.analyze-btn.loading {
+    background: #334155;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Results */
+.nutrition-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 2rem;
+}
+
+.nutri-card {
+    padding: 12px 8px;
+    border-radius: 16px;
+    text-align: center;
+    background: rgba(30, 41, 59, 0.6);
+}
+
+.nutri-card.highlight {
+    background: rgba(236, 72, 153, 0.15);
+    border: 1px solid rgba(236, 72, 153, 0.3);
+}
+
+.nutri-icon {
+    font-weight: 800;
+    color: #94a3b8;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: center;
+}
+
+.nutri-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #f8fafc;
+}
+
+.nutri-label {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.nutri-card.highlight .nutri-icon {
+    color: #ec4899;
+}
+
+.food-list {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    border-radius: 20px;
+}
+
+.food-list h3 {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.food-items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.food-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+}
+
+.food-name {
+    font-weight: 600;
+    display: block;
+}
+
+.food-name .hindi {
+    color: #94a3b8;
+    font-weight: 400;
+    font-size: 0.9em;
+}
+
+.food-portion {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.food-cals {
+    font-weight: 700;
+    color: #10b981;
+}
+
+.tips-section {
+    padding: 1.5rem;
+    border-radius: 20px;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    background: rgba(16, 185, 129, 0.05);
+    margin-bottom: 2rem;
+}
+
+.tips-section h3 {
+    color: #10b981;
+    margin-bottom: 0.5rem;
+}
+
+.tips-section p {
+    color: #cbd5e1;
+    line-height: 1.6;
+}
+
+.reset-btn-link {
+    background: none;
+    border: none;
+    color: #64748b;
+    width: 100%;
+    padding: 1rem;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.error-banner {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    padding: 12px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 600px) {
+    .nutrition-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

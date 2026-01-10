@@ -1,0 +1,428 @@
+/* Calorie Counter Page Styles */
+
+.calorie-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0A0F1C 0%, #1A1F2E 50%, #0A0F1C 100%);
+    color: white;
+}
+
+.calorie-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.calorie-header h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.calorie-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 24px;
+    align-items: start;
+}
+
+/* Column Wrappers */
+.calorie-main-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.calorie-sidebar-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: sticky;
+    top: 100px;
+}
+
+@media (max-width: 900px) {
+    .calorie-content {
+        grid-template-columns: 1fr;
+    }
+
+    .calorie-sidebar-column {
+        position: static;
+        order: -1;
+        /* Show progress on top for mobile */
+    }
+}
+
+/* Progress Card */
+.progress-card {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(239, 68, 68, 0.15));
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 24px;
+    padding: 24px;
+    margin-bottom: 20px;
+}
+
+.progress-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.flame-icon {
+    color: #F59E0B;
+    animation: flamePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes flamePulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.calorie-stats {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.calorie-stats .current {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #F59E0B;
+}
+
+.calorie-stats .divider {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.calorie-stats .goal {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.progress-bar-container {
+    height: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #F59E0B, #EF4444);
+    border-radius: 6px;
+    transition: width 0.5s ease;
+}
+
+.macro-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.macro-item {
+    text-align: center;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+}
+
+.macro-value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #10B981;
+}
+
+.macro-label {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Meal Tabs */
+.meal-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.meal-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.meal-tab:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.meal-tab.active {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.3), rgba(236, 72, 153, 0.3));
+    border-color: rgba(124, 58, 237, 0.5);
+    color: white;
+}
+
+.meal-tab span {
+    font-size: 0.8rem;
+}
+
+.meal-cal {
+    font-size: 0.7rem !important;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.meal-tab.active .meal-cal {
+    color: #F59E0B;
+}
+
+/* Quick Add */
+.quick-add {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.quick-add h3 {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 12px;
+}
+
+.quick-foods {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.quick-food-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    color: white;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.quick-food-btn:hover {
+    background: rgba(124, 58, 237, 0.3);
+    border-color: rgba(124, 58, 237, 0.5);
+}
+
+.quick-food-btn .food-cal {
+    font-size: 0.75rem;
+    color: #F59E0B;
+}
+
+/* Search Section */
+.search-section {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+}
+
+.search-bar svg {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.search-bar input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 0.95rem;
+    outline: none;
+}
+
+.search-bar input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.food-list {
+    margin-top: 12px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.food-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.food-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.food-item .food-info {
+    flex: 1;
+}
+
+.food-item .food-name {
+    display: block;
+    font-weight: 500;
+}
+
+.food-item .food-hindi {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.food-item .food-serving {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.food-item .food-calories {
+    text-align: right;
+    margin-right: 12px;
+}
+
+.food-item .food-calories span:first-child {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #F59E0B;
+}
+
+.food-item .food-calories .unit {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-left: 2px;
+}
+
+.add-food-btn {
+    padding: 8px;
+    background: linear-gradient(135deg, #7C3AED, #EC4899);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+}
+
+/* Daily Log */
+.daily-log {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.daily-log h3 {
+    font-size: 1rem;
+    margin-bottom: 16px;
+}
+
+.empty-log {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.4);
+    padding: 24px;
+}
+
+.log-entries {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.log-entry {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+}
+
+.entry-info {
+    flex: 1;
+}
+
+.entry-name {
+    display: block;
+    font-weight: 500;
+}
+
+.entry-hindi {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.entry-cal {
+    font-weight: 600;
+    color: #F59E0B;
+    margin-right: 12px;
+}
+
+.remove-btn {
+    padding: 8px;
+    background: rgba(239, 68, 68, 0.2);
+    border: none;
+    border-radius: 8px;
+    color: #EF4444;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.remove-btn:hover {
+    background: rgba(239, 68, 68, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+    .meal-tabs {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .macro-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+}

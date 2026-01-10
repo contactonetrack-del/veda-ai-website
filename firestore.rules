@@ -1,0 +1,22 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // VEDA AI Security Rules
+    
+    // 1. Calorie Logs: Allow users to read/write their own data
+    // (Note: Currently simpler rule for MVP sync)
+    match /calorie_logs/{logId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // 2. User Profiles: Strict owner-only access
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // 3. Default: Deny everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

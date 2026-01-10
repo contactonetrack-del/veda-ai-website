@@ -1,0 +1,565 @@
+/* Tools Page Styles */
+
+.tools-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0A0F1C 0%, #1A1F2E 50%, #0A0F1C 100%);
+    color: white;
+}
+
+.tools-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.back-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 12px;
+    padding: 10px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.tools-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #7C3AED, #EC4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.header-spacer {
+    width: 44px;
+}
+
+.tools-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+/* Tools Grid */
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.tool-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tool-card:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.tool-card.active {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(236, 72, 153, 0.2));
+    border-color: rgba(124, 58, 237, 0.5);
+}
+
+.tool-icon {
+    color: #8B5CF6;
+    margin-bottom: 12px;
+}
+
+.tool-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+
+.tool-card p {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* BMI Calculator */
+.bmi-calculator {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 28px;
+    margin-bottom: 24px;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.section-header svg {
+    color: #8B5CF6;
+}
+
+.section-header h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.input-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.input-row .input-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 8px;
+}
+
+/* Remove input spinners */
+.input-group input[type=number]::-webkit-inner-spin-button,
+.input-group input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.2s;
+    -moz-appearance: textfield;
+}
+
+.input-group input:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2) !important;
+    border-color: #8B5CF6 !important;
+    background: rgba(139, 92, 246, 0.1);
+}
+
+.input-group input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.button-group {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.calc-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border: none;
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.calc-btn.primary {
+    background: linear-gradient(135deg, #7C3AED, #EC4899);
+    color: white;
+}
+
+.calc-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
+}
+
+.calc-btn.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.calc-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Toggle & Selector Buttons */
+.toggle-buttons,
+.activity-selector,
+.goal-selector {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.toggle-btn,
+.activity-btn,
+.goal-btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.95rem;
+}
+
+.toggle-btn.active,
+.activity-btn.active {
+    background: rgba(139, 92, 246, 0.2);
+    border-color: #8B5CF6;
+    color: white;
+    font-weight: 600;
+}
+
+.goal-btn {
+    flex-direction: column;
+    text-align: center;
+    gap: 4px;
+}
+
+.goal-btn.active {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--goal-color);
+    box-shadow: 0 0 15px var(--goal-color);
+}
+
+.goal-label {
+    font-weight: 600;
+    color: white;
+}
+
+.goal-desc {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.input-group.full-width {
+    grid-column: 1 / -1;
+}
+
+/* Results Dashboard */
+.results-dashboard {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 20px;
+    padding: 24px;
+    margin-top: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.results-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    color: #10B981;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.metric-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 140px;
+}
+
+.metric-card.highlight {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(236, 72, 153, 0.15));
+    border-color: rgba(236, 72, 153, 0.5);
+}
+
+.metric-icon {
+    margin-bottom: 8px;
+    color: var(--card-color, #8B5CF6);
+}
+
+.metric-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: white;
+    line-height: 1.2;
+}
+
+.metric-label {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.metric-status {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 4px;
+}
+
+.additional-metrics {
+    display: grid;
+    gap: 12px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    margin-bottom: 24px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95rem;
+}
+
+.info-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.info-value {
+    font-weight: 600;
+    color: white;
+}
+
+.personalized-tips {
+    margin-top: 24px;
+}
+
+.personalized-tips h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    font-size: 1rem;
+    color: #FBBF24;
+}
+
+.personalized-tips ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+}
+
+.personalized-tips li {
+    display: flex;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.tip-icon {
+    font-size: 1.2rem;
+}
+
+.bmi-advice {
+    margin-top: 20px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 4px solid;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* Old BMI Result (Legacy Support if needed, otherwise hidden or styled) */
+.bmi-result {
+
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    border-left: 4px solid;
+    margin-bottom: 24px;
+    animation: resultFadeIn 0.4s ease;
+}
+
+@keyframes resultFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.bmi-value {
+    text-align: center;
+    min-width: 80px;
+}
+
+.bmi-value .number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    display: block;
+}
+
+.bmi-value .label {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.bmi-details .category {
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.bmi-details .advice {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.5;
+}
+
+/* BMI Scale */
+.bmi-scale {
+    margin-top: 16px;
+}
+
+.scale-bar {
+    display: flex;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.scale-segment {
+    flex: 1;
+    padding: 12px 8px;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.scale-segment.underweight {
+    background: #3B82F6;
+}
+
+.scale-segment.normal {
+    background: #10B981;
+}
+
+.scale-segment.overweight {
+    background: #F59E0B;
+}
+
+.scale-segment.obese {
+    background: #EF4444;
+}
+
+/* Quick Stats */
+.quick-stats {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 24px;
+}
+
+.quick-stats h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    color: #10B981;
+}
+
+.quick-stats ul {
+    list-style: none;
+    padding: 0;
+}
+
+.quick-stats li {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.quick-stats li:last-child {
+    border-bottom: none;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .tools-content {
+        padding: 16px;
+    }
+
+    .tools-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    .input-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .bmi-result {
+        flex-direction: column;
+        text-align: center;
+    }
+}
