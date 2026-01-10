@@ -8,6 +8,7 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Camera, Upload, X, Loader, Utensils, Flame, Droplets } from 'lucide-react';
 import { analyzeFoodImage } from '../services/api';
+import { logError, logEvent } from '../utils/errorLogger';
 import './SnapThaliPage.css';
 
 function SnapThaliPage() {
@@ -57,7 +58,12 @@ function SnapThaliPage() {
             const base64Image = previewUrl.split(',')[1];
             const data = await analyzeFoodImage(base64Image);
             setResult(data);
+            logEvent('vision', 'analysis_success', {
+                imageSize: base64Image.length,
+                calories: data.totalCalories
+            });
         } catch (err) {
+            logError('vision', err, { imageSize: previewUrl?.length });
             setError(err.message || "Failed to analyze image. Please try again.");
         } finally {
             setIsAnalyzing(false);

@@ -21,44 +21,33 @@ import {
     Building2,
     FileCheck
 } from 'lucide-react';
+import { calculatePremium, getInsuranceTips } from '../utils/insuranceCalculations';
 import './InsuranceEstimatorPage.css';
 
 // Coverage options with detailed benefits
 const COVERAGE_OPTIONS = {
+    // Note: Constants for values are now handled inside the util or passed cleanly
     basic: {
         name: 'Essential',
         amount: '₹3 Lakh',
-        value: 300000,
-        multiplier: 1.0,
+        value: '300000', // Changed to string key to match util expectation if needed, or keep number
         color: '#3B82F6',
         benefits: ['Hospitalization', 'Day Care', 'Pre-hospitalization (30 days)']
     },
     standard: {
         name: 'Comprehensive',
         amount: '₹5 Lakh',
-        value: 500000,
-        multiplier: 1.5,
+        value: '500000',
         color: '#10B981',
         benefits: ['All Essential +', 'Maternity Cover', 'OPD Benefits', 'No-Claim Bonus']
     },
     premium: {
         name: 'Supreme',
         amount: '₹10 Lakh',
-        value: 1000000,
-        multiplier: 2.2,
+        value: '1000000',
         color: '#F59E0B',
         benefits: ['All Comprehensive +', 'Air Ambulance', 'Worldwide Cover', 'Restore Benefit', 'Annual Health Checkup']
     },
-};
-
-// Base premium rates per age group (annual, per lakh coverage)
-const AGE_RATES = {
-    '18-25': 120,
-    '26-35': 180,
-    '36-45': 280,
-    '46-55': 450,
-    '56-65': 700,
-    '66+': 1100,
 };
 
 // Key health insurance terms
@@ -82,46 +71,28 @@ function InsuranceEstimatorPage() {
     const [result, setResult] = useState(null);
     const [showTerms, setShowTerms] = useState(false);
 
-    // Get age bracket
-    const getAgeBracket = (ageNum) => {
-        if (ageNum <= 25) return '18-25';
-        if (ageNum <= 35) return '26-35';
-        if (ageNum <= 45) return '36-45';
-        if (ageNum <= 55) return '46-55';
-        if (ageNum <= 65) return '56-65';
-        return '66+';
-    };
-
     // Calculate premium
-    const calculatePremium = () => {
+    const handleCalculate = () => {
         if (!age) return;
 
         const ageNum = parseInt(age);
-        const bracket = getAgeBracket(ageNum);
-        const baseRate = AGE_RATES[bracket];
         const coverageOption = COVERAGE_OPTIONS[coverage];
-        const lakhs = coverageOption.value / 100000;
 
-        // Base annual premium
-        let annual = baseRate * lakhs * coverageOption.multiplier;
+        // Use Utility
+        const annualPremium = calculatePremium({
+            age: ageNum,
+            coverage: coverageOption.value,
+            members: familySize,
+            hasPreExisting,
+            zone: 'Zone 1' // Defaulting to Zone 1 for now
+        });
 
-        // Family multiplier (each additional member adds 60% of base)
-        annual = annual * (1 + (familySize - 1) * 0.6);
-
-        // Pre-existing condition loading (15% extra)
-        if (hasPreExisting) {
-            annual = annual * 1.15;
-        }
-
-        // Round to nearest 100
-        annual = Math.round(annual / 100) * 100;
-
-        const monthly = Math.round(annual / 12);
-        const savings = Math.round(annual * 0.08); // 8% annual discount
+        const monthly = Math.round(annualPremium / 12);
+        const savings = Math.round(annualPremium * 0.08);
 
         setResult({
             monthly,
-            yearly: annual,
+            yearly: annualPremium,
             savings,
             coverageAmount: coverageOption.amount,
             coverageColor: coverageOption.color,
@@ -275,7 +246,7 @@ function InsuranceEstimatorPage() {
                         </div>
 
                         {/* Calculate Button */}
-                        <button className="calculate-btn" onClick={calculatePremium}>
+                        <button className="calculate-btn" onClick={handleCalculate}>
                             <Calculator size={20} />
                             Calculate Health Protection Premium
                         </button>

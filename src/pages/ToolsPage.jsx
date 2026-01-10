@@ -21,23 +21,24 @@ import {
     Heart,
     Lightbulb
 } from 'lucide-react';
+import {
+    calculateBMI,
+    getBMICategory,
+    calculateBMR,
+    calculateTDEE,
+    calculateIdealWeight,
+    calculateWaterIntake,
+    calculateProteinNeeds
+} from '../utils/healthCalculations';
 import './ToolsPage.css';
 
-// BMI Categories
-const BMI_CATEGORIES = [
-    { min: 0, max: 18.5, label: 'Underweight', color: '#3B82F6', advice: 'Consider increasing calorie intake with nutritious Indian foods like ghee, paneer, and nuts.' },
-    { min: 18.5, max: 24.9, label: 'Normal', color: '#10B981', advice: 'Excellent! Maintain your weight with balanced dal-chawal, sabzi, and regular yoga.' },
-    { min: 25, max: 29.9, label: 'Overweight', color: '#F59E0B', advice: 'Reduce fried foods, increase fiber intake. Try walking and Surya Namaskar daily.' },
-    { min: 30, max: 100, label: 'Obese', color: '#EF4444', advice: 'Consult a doctor. Switch to millets, reduce sugar, and start with light exercise.' },
-];
-
-// Activity Level Multipliers for TDEE
+// Activity Level Multipliers for TDEE (Metadata only)
 const ACTIVITY_LEVELS = [
-    { value: 1.2, label: 'Sedentary', desc: 'Desk job, little/no exercise' },
-    { value: 1.375, label: 'Light', desc: 'Light exercise 1-3 days/week' },
-    { value: 1.55, label: 'Moderate', desc: 'Moderate exercise 3-5 days/week' },
-    { value: 1.725, label: 'Active', desc: 'Hard exercise 6-7 days/week' },
-    { value: 1.9, label: 'Very Active', desc: 'Physical job + intense exercise' },
+    { value: 'sedentary', label: 'Sedentary', desc: 'Desk job, little/no exercise' },
+    { value: 'light', label: 'Light', desc: 'Light exercise 1-3 days/week' },
+    { value: 'moderate', label: 'Moderate', desc: 'Moderate exercise 3-5 days/week' },
+    { value: 'active', label: 'Active', desc: 'Hard exercise 6-7 days/week' },
+    { value: 'very_active', label: 'Very Active', desc: 'Physical job + intense exercise' },
 ];
 
 // Goal Options
@@ -55,7 +56,7 @@ function ToolsPage() {
     const [weight, setWeight] = useState('');
     const [age, setAge] = useState('');
     const [gender, setGender] = useState('male');
-    const [activityLevel, setActivityLevel] = useState(1.55);
+    const [activityLevel, setActivityLevel] = useState('moderate');
     const [goal, setGoal] = useState(0);
 
     // Results
@@ -64,50 +65,44 @@ function ToolsPage() {
     const calculateAll = () => {
         if (!height || !weight || !age) return;
 
-        const heightM = parseFloat(height) / 100;
         const weightKg = parseFloat(weight);
+        const heightCm = parseFloat(height);
         const ageYears = parseInt(age);
 
-        // BMI Calculation
-        const bmi = weightKg / (heightM * heightM);
-        const bmiCategory = BMI_CATEGORIES.find(cat => bmi >= cat.min && bmi < cat.max);
-
-        // BMR Calculation (Mifflin-St Jeor Equation)
-        let bmr;
-        if (gender === 'male') {
-            bmr = (10 * weightKg) + (6.25 * parseFloat(height)) - (5 * ageYears) + 5;
-        } else {
-            bmr = (10 * weightKg) + (6.25 * parseFloat(height)) - (5 * ageYears) - 161;
-        }
-
-        // TDEE Calculation
-        const tdee = bmr * activityLevel;
-
-        // Target Calories
+        // Core Calculations via Utils
+        const bmi = calculateBMI(weightKg, heightCm);
+        const bmiInfo = getBMICategory(bmi);
+        const bmr = calculateBMR(weightKg, heightCm, ageYears, gender);
+        const tdee = calculateTDEE(bmr, activityLevel);
         const targetCalories = tdee + goal;
 
-        // Ideal Weight Range (BMI 18.5 - 24.9)
-        const idealWeightMin = 18.5 * heightM * heightM;
-        const idealWeightMax = 24.9 * heightM * heightM;
+        const idealWeight = calculateIdealWeight(heightCm);
+        const waterIntake = calculateWaterIntake(weightKg);
+        const proteinRange = {
+            min: calculateProteinNeeds(weightKg, 'sedentary'), // base
+            max: calculateProteinNeeds(weightKg, 'very_active')// max
+        };
 
-        // Water Intake (30-35ml per kg)
-        const waterIntake = weightKg * 0.033; // liters
-
-        // Protein Needs (0.8-1g per kg for sedentary, 1.2-1.7g for active)
-        const proteinMin = weightKg * 0.8;
-        const proteinMax = weightKg * 1.2;
+        // Add advice based on BMI category (can be moved to Utils if complex)
+        const adviceMap = {
+            'Underweight': 'Consider increasing calorie intake with nutritious Indian foods like ghee, paneer, and nuts.',
+            'Normal': 'Excellent! Maintain your weight with balanced dal-chawal, sabzi, and regular yoga.',
+            'Overweight': 'Reduce fried foods, increase fiber intake. Try walking and Surya Namaskar daily.',
+            'Obese': 'Consult a doctor. Switch to millets, reduce sugar, and start with light exercise.'
+        };
+        bmiInfo.advice = adviceMap[bmiInfo.category] || 'Maintain a balanced diet.';
 
         setResults({
             bmi: bmi.toFixed(1),
-            bmiCategory,
-            bmr: Math.round(bmr),
-            tdee: Math.round(tdee),
-            targetCalories: Math.round(targetCalories),
-            idealWeightMin: idealWeightMin.toFixed(1),
-            idealWeightMax: idealWeightMax.toFixed(1),
-            waterIntake: waterIntake.toFixed(1),
-            proteinMin: Math.round(proteinMin),
-            proteinMax: Math.round(proteinMax),
+            bmiCategory: bmiInfo,
+            bmr,
+            tdee,
+            targetCalories,
+            idealWeightMin: idealWeight.min,
+            idealWeightMax: idealWeight.max,
+            waterIntake,
+            proteinMin: proteinRange.min,
+            proteinMax: proteinRange.max,
         });
     };
 
@@ -116,7 +111,7 @@ function ToolsPage() {
         setWeight('');
         setAge('');
         setGender('male');
-        setActivityLevel(1.55);
+        setActivityLevel('moderate');
         setGoal(0);
         setResults(null);
     };
