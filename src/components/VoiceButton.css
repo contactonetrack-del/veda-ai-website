@@ -1,174 +1,110 @@
-/* VoiceButton.css */
+/* VoiceButton Styles */
 
 .voice-button-container {
-    position: relative;
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 8px;
 }
 
-.voice-button-container.floating {
-    position: fixed;
-    bottom: 6rem;
-    right: 1.5rem;
-    z-index: 1000;
-}
-
-.voice-button {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
+.voice-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
     border: none;
-    cursor: pointer;
+    background: linear-gradient(135deg, #8B5CF6, #6366F1);
+    color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
-    background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
-    color: white;
-    box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
-}
-
-.voice-button:hover:not(:disabled) {
-    transform: scale(1.05);
-    box-shadow: 0 6px 25px rgba(124, 58, 237, 0.5);
-}
-
-.voice-button:active:not(:disabled) {
-    transform: scale(0.95);
-}
-
-.voice-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.7;
-}
-
-/* Button States */
-.voice-button.idle {
-    background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
-}
-
-.voice-button.recording {
-    background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
-    animation: pulse-recording 1s infinite;
-}
-
-.voice-button.processing {
-    background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
-}
-
-.voice-button.playing {
-    background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-}
-
-.voice-button.disconnected {
-    background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
-}
-
-/* Icon Animations */
-.voice-icon {
+    cursor: pointer;
     transition: all 0.2s ease;
+    flex-shrink: 0;
 }
 
-.voice-icon.recording {
-    animation: pulse-icon 0.5s infinite alternate;
+.voice-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
 }
 
-.voice-icon.spin {
-    animation: spin 1s linear infinite;
+.voice-btn.recording {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    animation: pulse-ring 1.5s infinite;
 }
 
-.voice-icon.pulse {
-    animation: pulse-icon 0.8s infinite alternate;
+.voice-btn.error {
+    background: linear-gradient(135deg, #F59E0B, #D97706);
 }
 
-/* Animations */
-@keyframes pulse-recording {
+.voice-btn.unsupported {
+    background: #475569;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
 
-    0%,
-    100% {
-        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+.voice-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.voice-btn svg.pulse {
+    animation: pulse-icon 1s ease-in-out infinite;
+}
+
+@keyframes pulse-ring {
+    0% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
     }
 
-    50% {
-        box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
+    70% {
+        box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
     }
 }
 
 @keyframes pulse-icon {
-    from {
+
+    0%,
+    100% {
         transform: scale(1);
     }
 
-    to {
-        transform: scale(1.2);
+    50% {
+        transform: scale(1.15);
     }
 }
 
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* Status & Error Messages */
 .voice-status {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-bottom: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    border-radius: 8px;
-    font-size: 0.875rem;
+    font-size: 0.75rem;
+    color: #94a3b8;
     white-space: nowrap;
     animation: fadeIn 0.2s ease;
 }
 
-.voice-error {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-bottom: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: rgba(239, 68, 68, 0.9);
-    color: white;
-    border-radius: 8px;
-    font-size: 0.875rem;
-    white-space: nowrap;
-    animation: fadeIn 0.2s ease;
+.voice-status.error {
+    color: #f59e0b;
 }
 
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateX(-50%) translateY(10px);
     }
 
     to {
         opacity: 1;
-        transform: translateX(-50%) translateY(0);
     }
 }
 
-/* Inline Mode (for chat input) */
-.voice-button-container.inline .voice-button {
-    width: 44px;
-    height: 44px;
-}
-
-/* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
-
-    .voice-status,
-    .voice-error {
-        background: rgba(0, 0, 0, 0.9);
-    }
+/* Floating position variant */
+.voice-btn.floating {
+    position: fixed;
+    bottom: 100px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    z-index: 100;
 }

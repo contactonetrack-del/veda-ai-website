@@ -1,126 +1,155 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Mic, MicOff, Volume2, Loader2 } from 'lucide-react';
-import voiceService from '../services/voiceService';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Mic, MicOff, AlertTriangle, Loader2 } from 'lucide-react';
 import './VoiceButton.css';
 
 /**
- * VoiceButton - Push-to-talk voice input component
- * 
- * Props:
- * - onTranscript: (text, language) => void - Called when speech is transcribed
- * - onResponse: (text, language) => void - Called when AI responds
- * - position: 'inline' | 'floating' - Button position style
+ * VoiceButton - Voice input using Web Speech API (Browser native)
+ * Falls back gracefully when WebSocket voice server is unavailable
  */
-function VoiceButton({ onTranscript, onResponse, position = 'inline' }) {
-    const [isConnected, setIsConnected] = useState(false);
-    const [isRecording, setIsRecording] = useState(false);
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [error, setError] = useState(null);
+const LANG_TAGS = {
+    en: 'en-IN',
+    hi: 'hi-IN',
+    bho: 'hi-IN', // Fallback to Hindi for STT
+    pa: 'pa-IN',
+    ur: 'ur-IN',
+    ne: 'ne-NP',
+    ks: 'ks-IN',
+    ta: 'ta-IN',
+    te: 'te-IN',
+    kn: 'kn-IN',
+    ml: 'ml-IN',
+    bn: 'bn-IN',
+    or: 'or-IN',
+    mr: 'mr-IN',
+    gu: 'gu-IN',
+    as: 'as-IN',
+    brx: 'brx-IN',
+    doi: 'doi-IN',
+    kok: 'kok-IN',
+    mai: 'mai-IN',
+    mni: 'mni-IN',
+    sat: 'sat-IN',
+    sd: 'sd-IN',
+    gon: 'hi-IN', // Fallback
+    hne: 'hi-IN', // Fallback
+};
 
-    // Connect to voice service on mount
+function VoiceButton({ onTranscript, onResponse, position = 'inline', language = 'en' }) {
+    const [isRecording, setIsRecording] = useState(false);
+    const [isSupported, setIsSupported] = useState(false);
+    const [error, setError] = useState(null);
+    const recognitionRef = useRef(null);
+    const transcriptRef = useRef('');
+
+    // Check browser support for Web Speech API
     useEffect(() => {
-        voiceService.setCallbacks({
-            onConnectionChange: setIsConnected,
-            onTranscript: (text, language, confidence) => {
-                onTranscript?.(text, language);
-                setIsProcessing(true);
-            },
-            onResponse: (text, language) => {
-                onResponse?.(text, language);
-                setIsProcessing(false);
-            },
-            onAudioStart: () => setIsPlaying(true),
-            onAudioEnd: () => setIsPlaying(false),
-            onError: (msg) => {
-                setError(msg);
-                setIsProcessing(false);
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            setIsSupported(true);
+
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = true;
+            recognition.lang = LANG_TAGS[language] || 'en-IN';
+
+            recognition.onresult = (event) => {
+                const transcript = Array.from(event.results)
+                    .map(result => result[0].transcript)
+                    .join('');
+
+                transcriptRef.current = transcript;
+
+                // Update input field with interim results
+                if (event.results[0].isFinal) {
+                    onTranscript?.(transcript, language);
+                    setIsRecording(false);
+                    // Haptic feedback if available (Web Vibration API)
+                    if (navigator.vibrate) navigator.vibrate(50);
+                }
+            };
+            // ... (rest same, just closing)
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                if (event.error === 'not-allowed') {
+                    setError('Microphone access denied');
+                } else {
+                    setError('Voice error');
+                }
                 setIsRecording(false);
                 setTimeout(() => setError(null), 3000);
-            },
-        });
+            };
 
-        voiceService.connect();
+            recognition.onend = () => {
+                setIsRecording(false);
+                if (transcriptRef.current) {
+                    onTranscript?.(transcriptRef.current, language);
+                }
+            };
 
-        return () => {
-            voiceService.disconnect();
-        };
-    }, [onTranscript, onResponse]);
+            recognitionRef.current = recognition;
+        }
+    }, [onTranscript, language]);
 
-    // Handle recording start
-    const handleMouseDown = useCallback(async () => {
-        if (!isConnected) {
-            setError('Connecting...');
+    const toggleRecording = useCallback(() => {
+        if (!isSupported) {
+            setError('Voice not supported');
+            setTimeout(() => setError(null), 3000);
             return;
         }
 
-        const success = await voiceService.startRecording();
-        if (success) {
-            setIsRecording(true);
-            setError(null);
-        }
-    }, [isConnected]);
-
-    // Handle recording stop
-    const handleMouseUp = useCallback(() => {
         if (isRecording) {
-            voiceService.stopRecording();
+            recognitionRef.current?.stop();
             setIsRecording(false);
+        } else {
+            transcriptRef.current = '';
+            try {
+                recognitionRef.current?.start();
+                setIsRecording(true);
+                setError(null);
+            } catch (err) {
+                console.error('Failed to start recording:', err);
+                setError('Mic busy');
+                setTimeout(() => setError(null), 2000);
+            }
         }
-    }, [isRecording]);
+    }, [isRecording, isSupported]);
 
-    // Determine button state
-    const getButtonState = () => {
-        if (isPlaying) return 'playing';
-        if (isProcessing) return 'processing';
-        if (isRecording) return 'recording';
-        if (!isConnected) return 'disconnected';
-        return 'idle';
+    const getButtonClass = () => {
+        let cls = `voice-btn ${position}`;
+        if (isRecording) cls += ' recording';
+        if (error) cls += ' error';
+        if (!isSupported) cls += ' unsupported';
+        return cls;
     };
 
-    const buttonState = getButtonState();
-
-    // Render icon based on state
-    const renderIcon = () => {
-        switch (buttonState) {
-            case 'playing':
-                return <Volume2 size={24} className="voice-icon pulse" />;
-            case 'processing':
-                return <Loader2 size={24} className="voice-icon spin" />;
-            case 'recording':
-                return <Mic size={24} className="voice-icon recording" />;
-            case 'disconnected':
-                return <MicOff size={24} className="voice-icon" />;
-            default:
-                return <Mic size={24} className="voice-icon" />;
-        }
+    const getStatusText = () => {
+        if (error) return error;
+        if (isRecording) return 'Listening...';
+        if (!isSupported) return 'Not supported';
+        return '';
     };
 
     return (
-        <div className={`voice-button-container ${position}`}>
+        <div className="voice-button-container">
             <button
-                className={`voice-button ${buttonState}`}
-                onMouseDown={handleMouseDown}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
-                onTouchStart={handleMouseDown}
-                onTouchEnd={handleMouseUp}
-                disabled={isProcessing || isPlaying}
-                title={isConnected ? 'Hold to speak' : 'Connecting...'}
+                className={getButtonClass()}
+                onClick={toggleRecording}
+                disabled={!isSupported}
+                title={isSupported ? 'Click to speak' : 'Voice not supported'}
             >
-                {renderIcon()}
+                {isRecording ? (
+                    <Mic size={20} className="pulse" />
+                ) : error ? (
+                    <AlertTriangle size={20} />
+                ) : (
+                    <Mic size={20} />
+                )}
             </button>
 
-            {error && (
-                <div className="voice-error">
-                    {error}
-                </div>
-            )}
-
-            {isRecording && (
-                <div className="voice-status">
-                    🎙️ Listening...
-                </div>
+            {getStatusText() && (
+                <span className={`voice-status ${error ? 'error' : ''}`}>
+                    {getStatusText()}
+                </span>
             )}
         </div>
     );

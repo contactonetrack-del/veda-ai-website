@@ -1,6 +1,6 @@
 /**
  * Auth Context for VEDA AI Website
- * Manages Firebase authentication state
+ * Manages Firebase authentication state + Guest mode
  */
 
 import { createContext, useContext, useState, useEffect } from 'react'
@@ -14,6 +14,22 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
+        // Check for guest mode first
+        const guestMode = localStorage.getItem('veda_guest_mode')
+        if (guestMode === 'true') {
+            const guestUser = {
+                uid: 'guest-' + Date.now(),
+                email: null,
+                displayName: 'Guest User',
+                photoURL: null,
+                isGuest: true,
+                messagesRemaining: 5 - parseInt(localStorage.getItem('veda_guest_messages') || '0')
+            }
+            setUser(guestUser)
+            setLoading(false)
+            return () => { }
+        }
+
         // Listen to Firebase auth state changes
         const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
             if (firebaseUser) {
@@ -22,6 +38,7 @@ export function AuthProvider({ children }) {
                     email: firebaseUser.email,
                     displayName: firebaseUser.displayName,
                     photoURL: firebaseUser.photoURL,
+                    isGuest: false,
                 }
                 setUser(userData)
                 // Also store in localStorage for compatibility
@@ -36,13 +53,46 @@ export function AuthProvider({ children }) {
         return () => unsubscribe()
     }, [])
 
+    const loginAsGuest = () => {
+        const guestUser = {
+            uid: 'guest-' + Date.now(),
+            email: null,
+            displayName: 'Guest User',
+            photoURL: null,
+            isGuest: true,
+            messagesRemaining: 5
+        }
+        localStorage.setItem('veda_guest_mode', 'true')
+        localStorage.setItem('veda_guest_messages', '0')
+        setUser(guestUser)
+    }
+
     const logout = async () => {
         try {
-            await signOut(auth)
-            localStorage.removeItem('veda_user')
-            localStorage.removeItem('veda_guest_mode')
+            // Check if it's a guest
+            if (user?.isGuest) {
+                localStorage.removeItem('veda_guest_mode')
+                localStorage.removeItem('veda_guest_messages')
+                setUser(null)
+            } else {
+                await signOut(auth)
+                localStorage.removeItem('veda_user')
+            }
         } catch (error) {
             console.error('Logout error:', error)
+        }
+    }
+
+    const refreshUser = () => {
+        if (auth.currentUser) {
+            const userData = {
+                uid: auth.currentUser.uid,
+                email: auth.currentUser.email,
+                displayName: auth.currentUser.displayName,
+                photoURL: auth.currentUser.photoURL,
+                isGuest: false,
+            }
+            setUser(userData)
         }
     }
 
@@ -50,7 +100,10 @@ export function AuthProvider({ children }) {
         user,
         loading,
         isAuthenticated: !!user,
+        isGuest: user?.isGuest || false,
         logout,
+        loginAsGuest,
+        refreshUser,
     }
 
     return (

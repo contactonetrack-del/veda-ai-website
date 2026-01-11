@@ -180,7 +180,7 @@ function ChatPage() {
                 aiResponse = await sendGuestMessage(currentInput, selectedLanguage, messages)
             } else {
                 // Authenticated: Use orchestrator with multi-agent + web search
-                const result = await sendOrchestratedMessage(currentInput, user?.id || 'guest', selectedMode, conversationStyle)
+                const result = await sendOrchestratedMessage(currentInput, user?.id || 'guest', selectedMode, conversationStyle, selectedLanguage)
                 aiResponse = result.response
                 sources = result.sources || []
                 agentUsed = result.agentUsed
@@ -319,6 +319,12 @@ function ChatPage() {
                         <LogOut size={18} />
                         {sidebarOpen && <span>Logout</span>}
                     </button>
+                    {sidebarOpen && (
+                        <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--glass-border)', textAlign: 'center' }}>
+                            <p style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--text-light)' }}>One Track</p>
+                            <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>Developed by Shiney</p>
+                        </div>
+                    )}
                 </div>
             </aside>
 
@@ -338,8 +344,8 @@ function ChatPage() {
                             onClick={() => setShowVoiceSettings(true)}
                             gender={voiceSettings.gender}
                         />
-                        <button className="icon-btn" onClick={() => navigate('/profile')}>
-                            <Settings size={20} />
+                        <button className="icon-btn" onClick={() => navigate('/profile')} title="Profile">
+                            <User size={20} />
                         </button>
                     </div>
                 </header>
@@ -348,36 +354,54 @@ function ChatPage() {
                     {messages.map((msg, idx) => (
                         <div key={idx} className={`chat-message ${msg.role}`}>
                             <div className="message-avatar">
-                                {msg.role === 'assistant' ? <Bot size={24} /> : <User size={24} />}
-                            </div>
-                            <div className="message-content">
                                 {msg.role === 'assistant' ? (
-                                    <>
-                                        <div className="message-header">
-                                            <ReactMarkdown>{msg.content}</ReactMarkdown>
-                                            {msg.agentUsed && (
-                                                <AgentBadge agent={msg.agentUsed} intent={msg.intent} />
-                                            )}
-                                        </div>
-                                        {msg.sources && msg.sources.length > 0 && (
-                                            <SourcesCitation
-                                                sources={msg.sources}
-                                                verified={msg.verified}
-                                                confidence={msg.confidence}
-                                            />
-                                        )}
-                                    </>
+                                    <img src="/Avatar Veda AI.png" alt="VEDA" className="avatar-img" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+                                ) : user?.photoURL ? (
+                                    <img src={user.photoURL} alt="You" className="avatar-img" />
                                 ) : (
-                                    msg.content
+                                    <span className="avatar-initial">{user?.displayName?.charAt(0) || user?.email?.charAt(0) || 'U'}</span>
                                 )}
+                                {msg.role === 'assistant' && <Bot size={24} style={{ display: 'none' }} />}
+                            </div>
+                            <div className="message-column">
+                                <div className="sender-name">
+                                    {msg.role === 'assistant' ? 'VEDA AI' : (user?.displayName || 'User Name')}
+                                </div>
+                                <div className="message-content">
+                                    {msg.role === 'assistant' ? (
+                                        <>
+                                            <div className="message-header">
+                                                <ReactMarkdown>{msg.content}</ReactMarkdown>
+                                                {msg.agentUsed && (
+                                                    <AgentBadge agent={msg.agentUsed} intent={msg.intent} />
+                                                )}
+                                            </div>
+                                            {msg.sources && msg.sources.length > 0 && (
+                                                <SourcesCitation
+                                                    sources={msg.sources}
+                                                    verified={msg.verified}
+                                                    confidence={msg.confidence}
+                                                />
+                                            )}
+                                        </>
+                                    ) : (
+                                        msg.content
+                                    )}
+                                </div>
                             </div>
                         </div>
                     ))}
                     {isLoading && (
                         <div className="chat-message assistant">
-                            <div className="message-avatar"><Bot size={24} /></div>
-                            <div className="message-content loading-dots">
-                                <span></span><span></span><span></span>
+                            <div className="message-avatar">
+                                <img src="/Avatar Veda AI.png" alt="VEDA" className="avatar-img" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+                                <Bot size={24} style={{ display: 'none' }} />
+                            </div>
+                            <div className="message-column">
+                                <div className="sender-name">VEDA AI</div>
+                                <div className="message-content loading-dots">
+                                    <span></span><span></span><span></span>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -484,7 +508,7 @@ function ChatPage() {
                             onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                             disabled={isLoading}
                         />
-                        <button onClick={handleSendMessage} disabled={isLoading || !inputValue.trim()}>
+                        <button className="send-btn" onClick={handleSendMessage} disabled={isLoading || !inputValue.trim()}>
                             <Send size={20} />
                         </button>
                         <VoiceButton
@@ -499,6 +523,7 @@ function ChatPage() {
                                 setInputValue('');
                             }}
                             position="inline"
+                            language={selectedLanguage}
                         />
                     </div>
                     <p className="input-hint">

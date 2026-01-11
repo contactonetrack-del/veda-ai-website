@@ -9,19 +9,11 @@ import { SUPPORTED_LANGUAGES, getSavedLanguage, saveLanguage } from '../services
 import './LanguageSelector.css';
 
 // Clean language display names
-const LANGUAGES = [
-    { code: 'en', name: 'English' },
-    { code: 'hi', name: 'हिंदी (Hindi)' },
-    { code: 'bho', name: 'भोजपुरी (Bhojpuri)', beta: true },
-    { code: 'ta', name: 'தமிழ் (Tamil)' },
-    { code: 'te', name: 'తెలుగు (Telugu)' },
-    { code: 'kn', name: 'ಕನ್ನಡ (Kannada)' },
-    { code: 'ml', name: 'മലയാളം (Malayalam)' },
-    { code: 'bn', name: 'বাংলা (Bengali)' },
-    { code: 'or', name: 'ଓଡ଼ିଆ (Odia)' },
-    { code: 'mr', name: 'मराठी (Marathi)' },
-    { code: 'gu', name: 'ગુજરાતી (Gujarati)' },
-];
+const LANGUAGES = Object.entries(SUPPORTED_LANGUAGES).map(([code, lang]) => ({
+    code,
+    name: lang.name,
+    beta: lang.beta
+}));
 
 function LanguageSelector({ selectedLanguage, onLanguageChange }) {
     const [isOpen, setIsOpen] = useState(false);

@@ -9,6 +9,7 @@ import {
     updateProfile
 } from 'firebase/auth'
 import { auth } from '../config/firebase'
+import { useAuth } from '../contexts/AuthContext'
 import './AuthModal.css'
 
 // Firebase error to user-friendly message
@@ -28,6 +29,7 @@ function getErrorMessage(code) {
 
 function AuthModal({ isOpen, onClose }) {
     const navigate = useNavigate()
+    const { loginAsGuest } = useAuth()
     const [mode, setMode] = useState('login')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -106,9 +108,8 @@ function AuthModal({ isOpen, onClose }) {
     }
 
     const handleGuestAccess = () => {
-        // Store guest mode in localStorage
-        localStorage.setItem('veda_guest_mode', 'true')
-        localStorage.setItem('veda_guest_messages', '0')
+        // Use auth context for proper guest login
+        loginAsGuest()
         onClose()
         navigate('/chat')
     }

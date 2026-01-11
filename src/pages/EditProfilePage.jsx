@@ -1,12 +1,9 @@
-/**
- * Edit Profile Page
- * Allow users to update their profile information
- */
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { updateProfile } from 'firebase/auth';
-import { auth } from '../config/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { auth, storage } from '../config/firebase';
 import {
     ArrowLeft,
     User,
@@ -24,6 +21,8 @@ function EditProfilePage() {
     const { user, refreshUser } = useAuth();
     const [loading, setLoading] = useState(false);
     const [saved, setSaved] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const fileInputRef = React.useRef(null);
 
     const [formData, setFormData] = useState({
         displayName: '',
@@ -39,8 +38,8 @@ function EditProfilePage() {
                 displayName: user.displayName || '',
                 email: user.email || '',
                 phone: user.phoneNumber || '',
-                location: '',
-                bio: ''
+                location: user.location || '', // Assuming location isn't standard in firebase user
+                bio: user.bio || ''
             });
         }
     }, [user]);
@@ -48,6 +47,31 @@ function EditProfilePage() {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setUploading(true);
+        try {
+            // Upload to Firebase Storage
+            const storageRef = ref(storage, `profile_photos/${user.uid}/${Date.now()}_${file.name}`);
+            await uploadBytes(storageRef, file);
+            const photoURL = await getDownloadURL(storageRef);
+
+            // Update user profile immediately with new photo
+            await updateProfile(auth.currentUser, { photoURL });
+
+            // Refresh context to show new image
+            if (refreshUser) refreshUser();
+
+        } catch (error) {
+            console.error('Error uploading photo:', error);
+            alert('Failed to upload photo. Please try again.');
+        } finally {
+            setUploading(false);
+        }
     };
 
     const handleSave = async () => {
@@ -72,8 +96,10 @@ function EditProfilePage() {
     };
 
     if (!user || user.isGuest) {
+        // ... (guest view logic same)
         return (
             <div className="edit-profile-page">
+                {/* ... existing guest view ... */}
                 <header className="edit-header glass">
                     <button className="back-btn" onClick={() => navigate(-1)}>
                         <ArrowLeft size={24} />
@@ -103,7 +129,7 @@ function EditProfilePage() {
                 <button
                     className={`save-btn ${saved ? 'saved' : ''}`}
                     onClick={handleSave}
-                    disabled={loading}
+                    disabled={loading || uploading}
                 >
                     {loading ? <Loader2 size={20} className="spin" /> :
                         saved ? '✓ Saved' : <><Save size={18} /> Save</>}
@@ -115,13 +141,28 @@ function EditProfilePage() {
                 <section className="avatar-section">
                     <div className="avatar-container">
                         <div className="avatar-large">
-                            {user.photoURL ? (
+                            {uploading ? (
+                                <div className="avatar-loading">
+                                    <Loader2 size={32} className="spin" />
+                                </div>
+                            ) : user.photoURL ? (
                                 <img src={user.photoURL} alt="Profile" />
                             ) : (
                                 <User size={60} />
                             )}
                         </div>
-                        <button className="change-photo-btn">
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                            style={{ display: 'none' }}
+                            accept="image/*"
+                        />
+                        <button
+                            className="change-photo-btn"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={uploading}
+                        >
                             <Camera size={18} />
                             Change Photo
                         </button>
@@ -129,12 +170,14 @@ function EditProfilePage() {
                 </section>
 
                 {/* Form Section */}
+                {/* ... rest of form ... */}
                 <section className="form-section">
                     <div className="input-group">
                         <label>
                             <User size={16} />
                             Display Name
                         </label>
+
                         <input
                             type="text"
                             name="displayName"

@@ -4,8 +4,11 @@
  * Supports multilingual responses including Bhojpuri (Beta)
  */
 
-// Production backend URL (Render)
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://veda-ai-backend-ql2b.onrender.com';
+// Use local backend in development, Render in production
+const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const API_BASE_URL = isLocalDev
+    ? 'http://localhost:8000'
+    : (import.meta.env.VITE_API_URL || 'https://veda-ai-backend-ql2b.onrender.com');
 const API_V1 = `${API_BASE_URL}/api/v1`;
 
 // Groq API for guest mode (same as mobile for consistency)
@@ -127,12 +130,20 @@ export async function sendMessage(chatId, content) {
  * @param {string} style - Conversation style: 'auto', 'fast', 'planning'
  * @returns {Object} Response with citations and metadata
  */
-export async function sendOrchestratedMessage(message, userId = 'guest', mode = 'auto', style = 'auto') {
+export async function sendOrchestratedMessage(message, userId = 'guest', mode = 'auto', style = 'auto', languageCode = 'en') {
     try {
+        let contextMessage = message;
+        // If language is not English, prepend context about the language
+        if (languageCode && languageCode !== 'en') {
+            const lang = SUPPORTED_LANGUAGES[languageCode];
+            const langName = lang ? lang.name : languageCode;
+            contextMessage = `[Response Language: ${langName}] ${message}`;
+        }
+
         const data = await apiRequest('/orchestrator/query', {
             method: 'POST',
             body: JSON.stringify({
-                message,
+                message: contextMessage,
                 user_id: userId,
                 context: {},
                 mode: mode,
@@ -178,24 +189,39 @@ export async function getOrchestratorStatus() {
 
 // ==================== GUEST AI (Groq - Same as Mobile) ====================
 
-// Supported Languages (Zone-wise) - Matches mobile app
+// Supported Languages (All 25 - Matches Backend)
 export const SUPPORTED_LANGUAGES = {
     // English (Default)
     en: { name: 'English', zone: 'Global', flag: '🌐' },
-    // North Zone (UP-Bihar Region)
-    hi: { name: 'हिंदी', zone: 'North', flag: '🇮🇳' },
-    bho: { name: 'भोजपुरी (Beta)', zone: 'North', flag: '🇮🇳' },
+    // North Zone
+    hi: { name: 'हिंदी (Hindi)', zone: 'North', flag: '🇮🇳' },
+    bho: { name: 'भोजपुरी (Bhojpuri)', zone: 'North', flag: '🇮🇳', beta: true },
+    pa: { name: 'ਪੰਜਾਬੀ (Punjabi)', zone: 'North', flag: '🇮🇳' },
+    ur: { name: 'اردو (Urdu)', zone: 'North', flag: '🇮🇳' },
+    ne: { name: 'नेपाली (Nepali)', zone: 'North', flag: '🇳🇵' },
+    ks: { name: 'कॉशुर (Kashmiri)', zone: 'North', flag: '🇮🇳' },
+    sd: { name: 'سنڌي (Sindhi)', zone: 'North', flag: '🇮🇳' },
+    doi: { name: 'डोगरी (Dogri)', zone: 'North', flag: '🇮🇳' },
+    mai: { name: 'मैथिली (Maithili)', zone: 'North', flag: '🇮🇳' },
+    sat: { name: 'संताली (Santali)', zone: 'North', flag: '🇮🇳' },
     // South Zone
-    ta: { name: 'தமிழ்', zone: 'South', flag: '🇮🇳' },
-    te: { name: 'తెలుగు', zone: 'South', flag: '🇮🇳' },
-    kn: { name: 'ಕನ್ನಡ', zone: 'South', flag: '🇮🇳' },
-    ml: { name: 'മലയാളം', zone: 'South', flag: '🇮🇳' },
+    ta: { name: 'தமிழ் (Tamil)', zone: 'South', flag: '🇮🇳' },
+    te: { name: 'తెలుగు (Telugu)', zone: 'South', flag: '🇮🇳' },
+    kn: { name: 'ಕನ್ನಡ (Kannada)', zone: 'South', flag: '🇮🇳' },
+    ml: { name: 'മലയാളം (Malayalam)', zone: 'South', flag: '🇮🇳' },
     // East Zone
-    bn: { name: 'বাংলা', zone: 'East', flag: '🇮🇳' },
-    or: { name: 'ଓଡ଼ିଆ', zone: 'East', flag: '🇮🇳' },
+    bn: { name: 'বাংলা (Bengali)', zone: 'East', flag: '🇮🇳' },
+    or: { name: 'ଓଡ଼ିଆ (Odia)', zone: 'East', flag: '🇮🇳' },
+    as: { name: 'অসমীয়া (Assamese)', zone: 'East', flag: '🇮🇳' },
+    mni: { name: 'মৈতৈলোন (Manipuri)', zone: 'East', flag: '🇮🇳' },
+    brx: { name: 'बड़ो (Bodo)', zone: 'East', flag: '🇮🇳' },
     // West Zone
-    mr: { name: 'मराठी', zone: 'West', flag: '🇮🇳' },
-    gu: { name: 'ગુજરાતી', zone: 'West', flag: '🇮🇳' },
+    mr: { name: 'मराठी (Marathi)', zone: 'West', flag: '🇮🇳' },
+    gu: { name: 'ગુજરાતી (Gujarati)', zone: 'West', flag: '🇮🇳' },
+    kok: { name: 'कोंकणी (Konkani)', zone: 'West', flag: '🇮🇳' },
+    // Tribal
+    gon: { name: 'गोंडी (Gondi)', zone: 'Tribal', flag: '🇮🇳' },
+    hne: { name: 'छत्तीसगढ़ी (Chhattisgarhi)', zone: 'Tribal', flag: '🇮🇳' },
 };
 
 export async function sendGuestMessage(message, languageCode = 'en', history = []) {

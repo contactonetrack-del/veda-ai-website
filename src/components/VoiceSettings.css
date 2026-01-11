@@ -14,12 +14,13 @@
 
 .voice-modal {
     width: 100%;
-    max-width: 420px;
+    max-width: 360px;
+    max-height: 85vh;
     background: linear-gradient(135deg, #1e293b, #0f172a);
     border: 1px solid rgba(148, 163, 184, 0.2);
-    border-radius: 20px;
+    border-radius: 16px;
     overflow: hidden;
-    animation: slideUp 0.3s ease;
+    animation: slideUp 0.2s ease;
 }
 
 @keyframes slideUp {
@@ -38,7 +39,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 24px;
+    padding: 14px 18px;
     border-bottom: 1px solid rgba(148, 163, 184, 0.1);
 }
 
@@ -79,10 +80,12 @@
 }
 
 .voice-modal-content {
-    padding: 24px;
+    padding: 16px 18px;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 16px;
+    overflow-y: auto;
+    max-height: 55vh;
 }
 
 .voice-section h3 {
@@ -108,11 +111,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    padding: 16px;
+    gap: 4px;
+    padding: 12px;
     background: rgba(30, 41, 59, 0.5);
     border: 2px solid rgba(148, 163, 184, 0.2);
-    border-radius: 14px;
+    border-radius: 10px;
     color: #94a3b8;
     cursor: pointer;
     transition: all 0.2s;
@@ -143,11 +146,11 @@
 .persona-card {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 14px 16px;
+    gap: 10px;
+    padding: 10px 12px;
     background: rgba(30, 41, 59, 0.5);
     border: 2px solid rgba(148, 163, 184, 0.15);
-    border-radius: 12px;
+    border-radius: 10px;
     cursor: pointer;
     transition: all 0.2s;
     text-align: left;
@@ -164,16 +167,16 @@
 }
 
 .persona-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
     background: var(--persona-color);
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 0.875rem;
 }
 
 .persona-info {
@@ -211,13 +214,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 14px;
+    gap: 6px;
+    padding: 10px;
     background: rgba(59, 130, 246, 0.2);
     border: 1px solid rgba(59, 130, 246, 0.3);
-    border-radius: 12px;
+    border-radius: 10px;
     color: #60a5fa;
     font-weight: 600;
+    font-size: 0.875rem;
     cursor: pointer;
     transition: all 0.2s;
 }
@@ -235,8 +239,8 @@
 /* Footer */
 .voice-modal-footer {
     display: flex;
-    gap: 12px;
-    padding: 20px 24px;
+    gap: 10px;
+    padding: 14px 18px;
     border-top: 1px solid rgba(148, 163, 184, 0.1);
 }
 

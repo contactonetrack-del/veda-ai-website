@@ -2,8 +2,9 @@
 
 .profile-page {
     min-height: 100vh;
-    background: linear-gradient(135deg, #0A0F1C 0%, #1A1F2E 50%, #0A0F1C 100%);
-    color: white;
+    background: var(--bg-dark);
+    /* Dynamic Background */
+    color: var(--text-light);
 }
 
 .profile-header {
@@ -11,17 +12,37 @@
     align-items: center;
     justify-content: space-between;
     padding: 16px 24px;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--glass-bg);
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--glass-border);
     position: sticky;
     top: 0;
     z-index: 100;
 }
 
+.back-btn {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.back-btn:hover {
+    background: var(--glass-border);
+    transform: scale(1.05);
+}
+
 .profile-header h1 {
     font-size: 1.2rem;
     font-weight: 600;
+    color: var(--text-light);
 }
 
 .profile-content {
@@ -36,8 +57,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
     border-radius: 24px;
     padding: 32px;
     margin-bottom: 32px;
@@ -104,15 +125,15 @@
 }
 
 .user-info p {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-dim);
     font-size: 0.95rem;
     margin-bottom: 16px;
 }
 
 .edit-profile-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text-light);
     padding: 8px 16px;
     border-radius: 12px;
     font-size: 0.9rem;
@@ -121,7 +142,7 @@
 }
 
 .edit-profile-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--glass-border);
 }
 
 /* Settings Sections */
@@ -133,14 +154,14 @@
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--text-dim);
     margin-bottom: 12px;
     padding-left: 8px;
 }
 
 .settings-card {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
     border-radius: 20px;
     overflow: hidden;
 }
@@ -149,7 +170,7 @@
     display: flex;
     align-items: center;
     padding: 16px 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--glass-border);
     cursor: pointer;
     transition: all 0.2s;
 }
@@ -159,7 +180,7 @@
 }
 
 .setting-item:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--glass-bg);
 }
 
 .setting-icon {

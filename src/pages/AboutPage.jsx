@@ -83,10 +83,11 @@ function AboutPage() {
                 {/* Credits */}
                 <section className="about-card">
                     <h3>Credits</h3>
-                    <p>
-                        VEDA AI is built with ❤️ by the VEDA Team.
-                        Powered by open-source AI models and community contributions.
-                    </p>
+                    <div className="credits-info">
+                        <p><strong>Company:</strong> One Track</p>
+                        <p><strong>Developed by:</strong> Shiney</p>
+                        <p style={{ marginTop: '8px', fontSize: '0.9rem', opacity: 0.8 }}>Powered by open-source AI models and community contributions.</p>
+                    </div>
                     <div className="links">
                         <a href="https://github.com" target="_blank" rel="noopener noreferrer">
                             <Github size={18} />

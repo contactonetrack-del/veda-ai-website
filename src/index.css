@@ -8,20 +8,36 @@
   /* Premium Gold */
   --highlight: #06B6D4;
   /* Bright Cyan (VEDA AI side) */
-  --bg-dark: #0F172A;
-  /* Slate 900 */
-  --bg-card: rgba(30, 41, 59, 0.7);
-  /* Translucent Slate */
-  --text-light: #F8FAFC;
-  --text-dim: #94A3B8;
 
-  /* Glassmorphism Styles */
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  /* Light Mode (Default) */
+  --bg-dark: #F0F9FF;
+  /* Sky 50 - confusing name, but keeping for compatibility */
+  --bg-card: rgba(255, 255, 255, 0.8);
+  --text-light: #0F172A;
+  /* Slate 900 */
+  --text-dim: #475569;
+  /* Slate 600 */
+
+  /* Glassmorphism Styles (Light) */
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(0, 0, 0, 0.05);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
 
   /* Transitions */
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark {
+  /* Dark Mode Overrides */
+  --bg-dark: #0F172A;
+  /* Slate 900 */
+  --bg-card: rgba(30, 41, 59, 0.7);
+  --text-light: #F8FAFC;
+  --text-dim: #94A3B8;
+
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
 * {

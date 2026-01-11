@@ -2,8 +2,11 @@
  * VoiceService - Handles WebSocket voice communication with VEDA AI
  */
 
-const WS_URL = import.meta.env.VITE_API_URL?.replace('http', 'ws') + '/api/v1/voice/ws'
-    || 'ws://localhost:8000/api/v1/voice/ws';
+// Use local WebSocket in development
+const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const WS_URL = isLocalDev
+    ? 'ws://localhost:8000/api/v1/voice/ws'
+    : (import.meta.env.VITE_API_URL?.replace('http', 'ws') + '/api/v1/voice/ws' || 'wss://veda-ai-backend-ql2b.onrender.com/api/v1/voice/ws');
 
 class VoiceService {
     constructor() {

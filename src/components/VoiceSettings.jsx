@@ -4,10 +4,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Volume2, User, UserCircle, Mic, Sparkles, X } from 'lucide-react';
+import { Volume2, User, UserCircle, Mic, Sparkles, X, Zap } from 'lucide-react';
 import './VoiceSettings.css';
 
-// Voice Personas - Different AI personalities
+// Voice Personas - Different AI personalities with unique test messages
 const VOICE_PERSONAS = [
     {
         id: 'default',
@@ -15,39 +15,44 @@ const VOICE_PERSONAS = [
         description: 'Calm & Balanced',
         color: '#10B981',
         pitch: 1.0,
-        rate: 0.9
+        rate: 0.9,
+        testMsg: 'Namaste! I am VEDA, your wellness guide.'
     },
     {
         id: 'enthusiast',
         name: 'Ananya',
         description: 'Energetic & Motivating',
         color: '#F59E0B',
-        pitch: 1.1,
-        rate: 1.0
+        pitch: 1.15,
+        rate: 1.05,
+        testMsg: 'Hey there! I am Ananya, ready to energize your day!'
     },
     {
         id: 'expert',
         name: 'Dr. Sharma',
         description: 'Professional & Precise',
         color: '#3B82F6',
-        pitch: 0.9,
-        rate: 0.85
+        pitch: 0.85,
+        rate: 0.85,
+        testMsg: 'Good day. I am Dr. Sharma, here to assist you professionally.'
     },
     {
         id: 'friendly',
         name: 'Priya',
         description: 'Warm & Supportive',
         color: '#EC4899',
-        pitch: 1.05,
-        rate: 0.95
+        pitch: 1.1,
+        rate: 0.95,
+        testMsg: 'Hello friend! I am Priya, always here for you.'
     },
     {
         id: 'guru',
         name: 'Guruji',
         description: 'Wise & Traditional',
         color: '#8B5CF6',
-        pitch: 0.85,
-        rate: 0.8
+        pitch: 0.75,
+        rate: 0.8,
+        testMsg: 'Om Shanti. I am Guruji, your guide to wisdom.'
     }
 ];
 
@@ -73,19 +78,60 @@ export function VoiceSettingsModal({ isOpen, onClose, settings, onSettingsChange
 
     const testVoice = () => {
         if ('speechSynthesis' in window) {
+            // If already playing, stop it
+            if (testPlaying) {
+                window.speechSynthesis.cancel();
+                setTestPlaying(false);
+                return;
+            }
+
             window.speechSynthesis.cancel();
 
             const persona = VOICE_PERSONAS.find(p => p.id === selectedPersona);
-            const utterance = new SpeechSynthesisUtterance(
-                "Namaste! I am VEDA AI, your wellness companion."
-            );
+            const utterance = new SpeechSynthesisUtterance(persona.testMsg);
+
+            // Get available voices and select based on gender
+            const voices = window.speechSynthesis.getVoices();
+
+            // Find appropriate voice based on gender
+            let selectedVoice = null;
+            if (voiceGender === 'male') {
+                // Look for male voices (Indian English preferred)
+                selectedVoice = voices.find(v =>
+                    v.name.toLowerCase().includes('male') ||
+                    v.name.toLowerCase().includes('ravi') ||
+                    v.name.toLowerCase().includes('hemant') ||
+                    v.name.includes('David') ||
+                    v.name.includes('Mark')
+                );
+                // Fallback: lower pitch for male effect
+                if (!selectedVoice) {
+                    utterance.pitch = Math.max(0.5, persona.pitch - 0.3);
+                }
+            } else {
+                // Look for female voices
+                selectedVoice = voices.find(v =>
+                    v.name.toLowerCase().includes('female') ||
+                    v.name.toLowerCase().includes('heera') ||
+                    v.name.includes('Zira') ||
+                    v.name.includes('Samantha')
+                );
+                if (!selectedVoice) {
+                    utterance.pitch = Math.min(1.5, persona.pitch + 0.1);
+                }
+            }
+
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+            }
 
             utterance.lang = 'en-IN';
-            utterance.pitch = persona.pitch;
+            utterance.pitch = selectedVoice ? persona.pitch : utterance.pitch;
             utterance.rate = persona.rate;
 
             utterance.onstart = () => setTestPlaying(true);
             utterance.onend = () => setTestPlaying(false);
+            utterance.onerror = () => setTestPlaying(false);
 
             window.speechSynthesis.speak(utterance);
         }
@@ -115,14 +161,14 @@ export function VoiceSettingsModal({ isOpen, onClose, settings, onSettingsChange
                                 className={`gender-btn ${voiceGender === 'female' ? 'active' : ''}`}
                                 onClick={() => setVoiceGender('female')}
                             >
-                                <UserCircle size={24} />
+                                <Sparkles size={24} />
                                 <span>Female</span>
                             </button>
                             <button
                                 className={`gender-btn ${voiceGender === 'male' ? 'active' : ''}`}
                                 onClick={() => setVoiceGender('male')}
                             >
-                                <User size={24} />
+                                <Zap size={24} />
                                 <span>Male</span>
                             </button>
                         </div>
@@ -157,13 +203,16 @@ export function VoiceSettingsModal({ isOpen, onClose, settings, onSettingsChange
                         </div>
                     </section>
 
-                    {/* Test Button */}
+                    {/* Test/Stop Button */}
                     <button
                         className={`test-voice-btn ${testPlaying ? 'playing' : ''}`}
                         onClick={testVoice}
                     >
-                        <Mic size={18} />
-                        {testPlaying ? 'Playing...' : 'Test Voice'}
+                        {testPlaying ? (
+                            <><X size={16} /> Stop</>
+                        ) : (
+                            <><Mic size={16} /> Test Voice</>
+                        )}
                     </button>
                 </div>
 
@@ -180,11 +229,7 @@ export function VoiceSettingsModal({ isOpen, onClose, settings, onSettingsChange
 export function VoiceSettingsButton({ onClick, gender }) {
     return (
         <button className="voice-settings-trigger" onClick={onClick} title="Voice Settings">
-            {gender === 'male' ? (
-                <User size={16} className="male" />
-            ) : (
-                <UserCircle size={16} className="female" />
-            )}
+            <Volume2 size={20} />
         </button>
     );
 }
