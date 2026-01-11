@@ -6,6 +6,7 @@ import { logError, logEvent } from '../utils/errorLogger'
 import LanguageSelector from '../components/LanguageSelector'
 import { SourcesCitation, AgentBadge } from '../components/SourcesCitation'
 import VoiceButton from '../components/VoiceButton'
+import { VoiceSettingsModal, VoiceSettingsButton } from '../components/VoiceSettings'
 import {
     Menu,
     X,
@@ -85,6 +86,19 @@ function ChatPage() {
     const [showModeDropdown, setShowModeDropdown] = useState(false)
     const [conversationStyle, setConversationStyle] = useState('auto') // Conversation Style: auto/fast/planning
     const [showStyleDropdown, setShowStyleDropdown] = useState(false)
+
+    // Voice Settings
+    const [showVoiceSettings, setShowVoiceSettings] = useState(false)
+    const [voiceSettings, setVoiceSettings] = useState(() => {
+        const saved = localStorage.getItem('veda_voice_settings')
+        return saved ? JSON.parse(saved) : { gender: 'female', persona: 'default' }
+    })
+
+    // Save voice settings when changed
+    const handleVoiceSettingsChange = (newSettings) => {
+        setVoiceSettings(newSettings)
+        localStorage.setItem('veda_voice_settings', JSON.stringify(newSettings))
+    }
 
     // Chat History (localStorage for now, backend later for authenticated users)
     const [chatHistory, setChatHistory] = useState(() => {
@@ -320,6 +334,10 @@ function ChatPage() {
                             selectedLanguage={selectedLanguage}
                             onLanguageChange={handleLanguageChange}
                         />
+                        <VoiceSettingsButton
+                            onClick={() => setShowVoiceSettings(true)}
+                            gender={voiceSettings.gender}
+                        />
                         <button className="icon-btn" onClick={() => navigate('/profile')}>
                             <Settings size={20} />
                         </button>
@@ -488,6 +506,14 @@ function ChatPage() {
                     </p>
                 </div>
             </main>
+
+            {/* Voice Settings Modal */}
+            <VoiceSettingsModal
+                isOpen={showVoiceSettings}
+                onClose={() => setShowVoiceSettings(false)}
+                settings={voiceSettings}
+                onSettingsChange={handleVoiceSettingsChange}
+            />
         </div>
     )
 }
