@@ -8,13 +8,13 @@ import { getFirestore } from 'firebase/firestore';
 import { getAnalytics } from 'firebase/analytics';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCjWigElA2r4fXwlv26SsOIw742_h9WQG4",
-    authDomain: "veda-ai-b412f.firebaseapp.com",
-    projectId: "veda-ai-b412f",
-    storageBucket: "veda-ai-b412f.firebasestorage.app",
-    messagingSenderId: "247809272190",
-    appId: "1:247809272190:web:bb6d6e307d976760feab2f",
-    measurementId: "G-16EH06Y7BC"
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase

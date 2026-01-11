@@ -1,0 +1,219 @@
+/* About Page Styles */
+
+.about-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #f8fafc;
+}
+
+.about-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.back-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(148, 163, 184, 0.1);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.back-btn:hover {
+    background: rgba(148, 163, 184, 0.2);
+    color: #f8fafc;
+}
+
+.about-header h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.about-content {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.about-card {
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-radius: 16px;
+    padding: 24px;
+}
+
+.about-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #94a3b8;
+    margin: 0 0 16px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* App Logo */
+.app-logo {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.logo-icon {
+    font-size: 4rem;
+    margin-bottom: 12px;
+}
+
+.app-logo h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0;
+    background: linear-gradient(135deg, #10b981, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.version {
+    color: #64748b;
+    font-size: 0.875rem;
+    margin-top: 4px;
+}
+
+.tagline {
+    text-align: center;
+    color: #cbd5e1;
+    line-height: 1.6;
+}
+
+/* Feature List */
+.feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.feature-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.feature-list li svg {
+    color: #10b981;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.feature-list li div {
+    display: flex;
+    flex-direction: column;
+}
+
+.feature-list li strong {
+    color: #f8fafc;
+    font-weight: 600;
+}
+
+.feature-list li span {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+/* Tech Grid */
+.tech-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tech-tag {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Links */
+.links {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.links a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #60a5fa;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.links a:hover {
+    color: #93c5fd;
+}
+
+/* Legal */
+.about-card.legal {
+    display: flex;
+    gap: 12px;
+    padding: 16px 24px;
+}
+
+.about-card.legal button {
+    flex: 1;
+    background: transparent;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    color: #94a3b8;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.about-card.legal button:hover {
+    background: rgba(148, 163, 184, 0.1);
+    color: #f8fafc;
+}
+
+/* Footer */
+.about-footer {
+    text-align: center;
+    padding: 24px;
+    color: #64748b;
+    font-size: 0.875rem;
+}
+
+.about-footer p {
+    margin: 4px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.about-footer .heart {
+    color: #ef4444;
+}

@@ -98,6 +98,8 @@ export function AgentBadge({ agent, intent }) {
                 return 'wellness';
             case 'tool':
                 return 'tools';
+            case 'research':
+                return 'research';
             default:
                 return '';
         }
@@ -111,6 +113,8 @@ export function AgentBadge({ agent, intent }) {
                 return <Activity size={10} />;
             case 'tool':
                 return <Wrench size={10} />;
+            case 'research':
+                return <Globe size={10} />;
             default:
                 return null;
         }

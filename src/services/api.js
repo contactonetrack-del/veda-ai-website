@@ -123,16 +123,20 @@ export async function sendMessage(chatId, content) {
  * 
  * @param {string} message - User's query
  * @param {string} userId - User ID (optional, defaults to 'guest')
+ * @param {string} mode - Agent mode: 'auto', 'research', 'analyze', 'study', etc.
+ * @param {string} style - Conversation style: 'auto', 'fast', 'planning'
  * @returns {Object} Response with citations and metadata
  */
-export async function sendOrchestratedMessage(message, userId = 'guest') {
+export async function sendOrchestratedMessage(message, userId = 'guest', mode = 'auto', style = 'auto') {
     try {
         const data = await apiRequest('/orchestrator/query', {
             method: 'POST',
             body: JSON.stringify({
                 message,
                 user_id: userId,
-                context: {}
+                context: {},
+                mode: mode,
+                style: style  // Conversation style
             }),
         });
 
@@ -195,86 +199,24 @@ export const SUPPORTED_LANGUAGES = {
 };
 
 export async function sendGuestMessage(message, languageCode = 'en', history = []) {
-    const lang = SUPPORTED_LANGUAGES[languageCode];
-
-    // Special prompt for Bhojpuri (Beta) - Pure language, family-friendly
-    const bhojpuriPrompt = `तू VEDA AI बाड़ऽ, भोजपुरी बोलेवाला लोग खातिर वेलनेस साथी।
-
-भाषा के नियम:
-- खाली शुद्ध भोजपुरी में जवाब देबऽ
-- हिंदी या अंग्रेजी मिलाइब नाहीं
-- देवनागरी लिपि में लिखबऽ
-- गारी-गलौज बिल्कुल ना करबऽ
-- सम्मानजनक भाषा बोलबऽ
-
-शैली:
-- छोट आ सीधा जवाब देबऽ
-- **बोल्ड** में जरूरी बात लिखबऽ
-- बिंदुवार लिखबऽ
-
-विशेषज्ञता:
-- भोजपुरी खान-पान (लिट्टी-चोखा, सत्तू, ठेकुआ, चूड़ा-दही)
-- योग आ प्राणायाम
-- आयुर्वेद के घरेलू नुस्खा
-- स्वास्थ्य बीमा के जानकारी
-
-हमेशा शुद्ध भोजपुरी में जवाब देबऽ। हर बार "प्रणाम" या "जय हो" मत बोलबऽ - सीधा जवाब देबऽ।`;
-
-    // Standard prompt for other languages
-    const standardPrompt = `You are VEDA AI, a premium wellness companion for Indian users.
-
-RESPONSE LANGUAGE: ${lang.name} (${languageCode})
-You MUST respond entirely in ${lang.name}. Use native script, not transliteration.
-
-YOUR STYLE:
-- **Premium & Professional:** Clear, elegant language in ${lang.name}.
-- **Short & Crisp:** Use bullet points, avoid long paragraphs.
-- **Natural Conversation:** Do NOT start every response with greetings like "Namaste". Only greet when contextually appropriate. Jump straight to helpful content.
-- **Visual Formatting:** Use **Bold** for key terms, lists for steps.
-
-EXPERTISE:
-- Indian Nutrition (Roti, Dal, Ghee, regional foods)
-- Yoga (Asanas, Pranayama)
-- Ayurveda (Doshas, traditional remedies)
-- Health Insurance (IRDAI guidelines)
-
-Respond naturally in ${lang.name} with native script.`;
-
-    const systemPrompt = languageCode === 'bho' ? bhojpuriPrompt : standardPrompt;
-
     try {
-        const response = await fetch(
-            'https://api.groq.com/openai/v1/chat/completions',
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${GROQ_API_KEY}`
-                },
-                body: JSON.stringify({
-                    messages: [
-                        { role: "system", content: systemPrompt },
-                        ...history.map(msg => ({
-                            role: msg.role === 'user' ? 'user' : 'assistant',
-                            content: msg.content
-                        })),
-                        { role: "user", content: message }
-                    ],
-                    model: "llama-3.3-70b-versatile",
-                    temperature: 0.7,
-                    max_tokens: 1024,
-                }),
-            }
-        );
+        // Use the backend orchestrator for guest chats too!
+        // This ensures they get the same intelligence and we hide API keys.
 
-        if (!response.ok) {
-            const error = await response.json();
-            console.error('Groq API Error:', error);
-            throw new Error('Service busy. Please try again.');
+        let contextMessage = message;
+        // If language is not English, prepend context about the language
+        if (languageCode !== 'en') {
+            const lang = SUPPORTED_LANGUAGES[languageCode];
+            contextMessage = `[Response Language: ${lang.name}] ${message}`;
         }
 
-        const data = await response.json();
-        return data.choices[0]?.message?.content || "No response generated.";
+        const result = await sendOrchestratedMessage(contextMessage, "guest");
+
+        if (result.success) {
+            return result.response;
+        } else {
+            throw new Error(result.error || "Failed to get response");
+        }
 
     } catch (error) {
         console.error('Guest Chat Error:', error);
@@ -367,6 +309,175 @@ export async function getVisionRateLimitStatus() {
     }
 }
 
+// ==================== LOCAL AI API (Zero-Cost Local Models) ====================
+
+/**
+ * Query local LLM directly (zero-cost, runs on Ollama)
+ * @param {string} prompt - User query
+ * @param {string} modelType - 'reasoning', 'fast', 'coding', 'vision'
+ * @param {Object} options - Optional: temperature, maxTokens, reasoningMode
+ */
+export async function queryLocalLLM(prompt, modelType = 'reasoning', options = {}) {
+    return apiRequest('/local-llm/query', {
+        method: 'POST',
+        body: JSON.stringify({
+            prompt,
+            model_type: modelType,
+            temperature: options.temperature || 0.7,
+            max_tokens: options.maxTokens || 2000,
+            system_prompt: options.systemPrompt || null,
+            reasoning_mode: options.reasoningMode || false
+        }),
+    });
+}
+
+/**
+ * Get local LLM status (check if Ollama is running)
+ */
+export async function getLocalLLMStatus() {
+    return apiRequest('/local-llm/status');
+}
+
+/**
+ * Compare responses from multiple local models
+ */
+export async function compareLocalModels(prompt) {
+    return apiRequest('/local-llm/compare', {
+        method: 'POST',
+        body: JSON.stringify({ prompt }),
+    });
+}
+
+// ==================== ADVANCED REASONING API ====================
+
+/**
+ * Use advanced reasoning for complex problems
+ * @param {string} query - User's question
+ * @param {string} method - 'auto', 'chain_of_thought', 'tree_of_thought', 'self_consistency', 'decomposed'
+ */
+export async function advancedReasoning(query, method = 'auto', context = null) {
+    return apiRequest('/reasoning/query', {
+        method: 'POST',
+        body: JSON.stringify({
+            query,
+            method,
+            context,
+            num_attempts: 3,
+            num_paths: 3
+        }),
+    });
+}
+
+/**
+ * Get available reasoning methods
+ */
+export async function getReasoningMethods() {
+    return apiRequest('/reasoning/methods');
+}
+
+// ==================== KNOWLEDGE BASE & RAG API ====================
+
+/**
+ * Query knowledge base with RAG (Retrieval-Augmented Generation)
+ * Returns LLM response enhanced with knowledge base context
+ */
+export async function queryKnowledge(query, options = {}) {
+    return apiRequest('/knowledge/query', {
+        method: 'POST',
+        body: JSON.stringify({
+            query,
+            collection: options.collection || null,
+            num_contexts: options.numContexts || 3,
+            model_type: options.modelType || 'reasoning',
+            include_sources: options.includeSources !== false
+        }),
+    });
+}
+
+/**
+ * Search knowledge base (without LLM generation)
+ */
+export async function searchKnowledge(query, limit = 5) {
+    return apiRequest('/knowledge/search', {
+        method: 'POST',
+        body: JSON.stringify({ query, limit }),
+    });
+}
+
+/**
+ * Add knowledge to the database
+ */
+export async function addKnowledge(content, source = 'user', title = '', category = 'general') {
+    return apiRequest('/knowledge/add', {
+        method: 'POST',
+        body: JSON.stringify({ content, source, title, category }),
+    });
+}
+
+/**
+ * Get knowledge base status
+ */
+export async function getKnowledgeStatus() {
+    return apiRequest('/knowledge/status');
+}
+
+// ==================== DOMAIN EXPERTS API ====================
+
+/**
+ * Query a specific domain expert
+ * @param {string} query - User's question
+ * @param {string} expert - Expert type or null for auto-detect
+ * @param {Object} options - useReasoning, reasoningMethod, context
+ */
+export async function queryExpert(query, expert = null, options = {}) {
+    return apiRequest('/experts/query', {
+        method: 'POST',
+        body: JSON.stringify({
+            query,
+            expert,
+            use_reasoning: options.useReasoning || false,
+            reasoning_method: options.reasoningMethod || 'auto',
+            context: options.context || null
+        }),
+    });
+}
+
+/**
+ * List all available domain experts
+ */
+export async function listExperts() {
+    return apiRequest('/experts/list');
+}
+
+/**
+ * Detect intent/domain from a query
+ */
+export async function detectIntent(query) {
+    return apiRequest('/experts/detect-intent', {
+        method: 'POST',
+        body: JSON.stringify({ query }),
+    });
+}
+
+// ==================== BROWSER AGENT API ====================
+
+/**
+ * Search the web using browser agent (like Perplexity)
+ */
+export async function webSearch(query, numResults = 3) {
+    return apiRequest('/browser/search', {
+        method: 'POST',
+        body: JSON.stringify({ query, num_results: numResults }),
+    });
+}
+
+/**
+ * Get browser agent status
+ */
+export async function getBrowserStatus() {
+    return apiRequest('/browser/status');
+}
+
 export default {
     signup,
     login,
@@ -387,4 +498,23 @@ export default {
     getLanguageByZone,
     getSavedLanguage,
     saveLanguage,
+    // Local AI (Zero-cost)
+    queryLocalLLM,
+    getLocalLLMStatus,
+    compareLocalModels,
+    // Advanced Reasoning
+    advancedReasoning,
+    getReasoningMethods,
+    // Knowledge Base
+    queryKnowledge,
+    searchKnowledge,
+    addKnowledge,
+    getKnowledgeStatus,
+    // Domain Experts
+    queryExpert,
+    listExperts,
+    detectIntent,
+    // Browser Agent
+    webSearch,
+    getBrowserStatus,
 };

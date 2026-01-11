@@ -425,6 +425,100 @@
     margin-top: 12px;
 }
 
+/* Phase 5: Mode Selection Dropdown */
+.dropdowns-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.mode-dropdown-container {
+    position: relative;
+}
+
+.mode-dropdown-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: var(--text-light);
+}
+
+.mode-dropdown-trigger:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--highlight);
+}
+
+.mode-dropdown-trigger .rotated {
+    transform: rotate(180deg);
+}
+
+.mode-dropdown-menu {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    margin-bottom: 8px;
+    background: rgba(15, 23, 42, 0.98);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 8px;
+    min-width: 280px;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    backdrop-filter: blur(20px);
+}
+
+.mode-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: var(--transition);
+    color: var(--text-dim);
+    text-align: left;
+}
+
+.mode-dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-light);
+}
+
+.mode-dropdown-item.active {
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(168, 85, 247, 0.15));
+    color: var(--highlight);
+}
+
+.mode-item-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.mode-item-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.mode-item-desc {
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
 /* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
     .sidebar {

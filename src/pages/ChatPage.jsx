@@ -5,6 +5,7 @@ import { getCurrentUser, logout, sendGuestMessage, sendOrchestratedMessage, getS
 import { logError, logEvent } from '../utils/errorLogger'
 import LanguageSelector from '../components/LanguageSelector'
 import { SourcesCitation, AgentBadge } from '../components/SourcesCitation'
+import VoiceButton from '../components/VoiceButton'
 import {
     Menu,
     X,
@@ -17,9 +18,36 @@ import {
     Bot,
     Trash2,
     Sparkles,
-    Clock
+    Clock,
+    Globe,
+    BarChart2,
+    Heart,
+    Search,
+    Shield,
+    ChevronDown,
+    GraduationCap,
+    Zap,
+    Lightbulb
 } from 'lucide-react'
 import './ChatPage.css'
+
+// Conversation Styles (thinking approach)
+const CONVERSATION_STYLES = [
+    { id: 'auto', label: 'Auto', icon: Sparkles, description: 'Balanced thinking' },
+    { id: 'fast', label: 'Fast', icon: Zap, description: 'Quick, concise responses' },
+    { id: 'planning', label: 'Planning', icon: Lightbulb, description: 'Structured brainstorming' }
+];
+
+// Agent Modes (specialist focus)
+const CHAT_MODES = [
+    { id: 'auto', label: 'Auto', icon: Sparkles, description: 'Let AI choose the best agent' },
+    { id: 'study', label: 'Study', icon: GraduationCap, description: 'Critical thinking & clarity' },
+    { id: 'research', label: 'Research', icon: Globe, description: 'Deep analysis with web sources' },
+    { id: 'analyze', label: 'Analyze', icon: BarChart2, description: 'Math & data calculations' },
+    { id: 'wellness', label: 'Wellness', icon: Heart, description: 'Yoga, Ayurveda & Diet' },
+    { id: 'search', label: 'Search', icon: Search, description: 'Live web search' },
+    { id: 'protection', label: 'Protection', icon: Shield, description: 'Insurance guidance' }
+];
 
 // Welcome messages in different languages (matching mobile app)
 const WELCOME_MESSAGES = {
@@ -53,6 +81,10 @@ function ChatPage() {
     ])
     const [inputValue, setInputValue] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+    const [selectedMode, setSelectedMode] = useState('auto') // Agent Mode
+    const [showModeDropdown, setShowModeDropdown] = useState(false)
+    const [conversationStyle, setConversationStyle] = useState('auto') // Conversation Style: auto/fast/planning
+    const [showStyleDropdown, setShowStyleDropdown] = useState(false)
 
     // Chat History (localStorage for now, backend later for authenticated users)
     const [chatHistory, setChatHistory] = useState(() => {
@@ -134,7 +166,7 @@ function ChatPage() {
                 aiResponse = await sendGuestMessage(currentInput, selectedLanguage, messages)
             } else {
                 // Authenticated: Use orchestrator with multi-agent + web search
-                const result = await sendOrchestratedMessage(currentInput, user?.id || 'guest')
+                const result = await sendOrchestratedMessage(currentInput, user?.id || 'guest', selectedMode, conversationStyle)
                 aiResponse = result.response
                 sources = result.sources || []
                 agentUsed = result.agentUsed
@@ -335,6 +367,94 @@ function ChatPage() {
                 </div>
 
                 <div className="chat-input-container">
+                    {/* Two Dropdowns: Conversation Style + Agent Mode */}
+                    <div className="dropdowns-row">
+                        {/* Conversation Style Dropdown */}
+                        <div className="mode-dropdown-container">
+                            <button
+                                className="mode-dropdown-trigger style-trigger"
+                                onClick={() => { setShowStyleDropdown(!showStyleDropdown); setShowModeDropdown(false); }}
+                            >
+                                {(() => {
+                                    const current = CONVERSATION_STYLES.find(s => s.id === conversationStyle);
+                                    const Icon = current?.icon || Sparkles;
+                                    return (
+                                        <>
+                                            <Icon size={14} />
+                                            <span>{current?.label || 'Auto'}</span>
+                                            <ChevronDown size={12} className={showStyleDropdown ? 'rotated' : ''} />
+                                        </>
+                                    );
+                                })()}
+                            </button>
+                            {showStyleDropdown && (
+                                <div className="mode-dropdown-menu">
+                                    {CONVERSATION_STYLES.map((style) => {
+                                        const Icon = style.icon;
+                                        return (
+                                            <button
+                                                key={style.id}
+                                                className={`mode-dropdown-item ${conversationStyle === style.id ? 'active' : ''}`}
+                                                onClick={() => {
+                                                    setConversationStyle(style.id);
+                                                    setShowStyleDropdown(false);
+                                                }}
+                                            >
+                                                <Icon size={18} />
+                                                <div className="mode-item-text">
+                                                    <span className="mode-item-label">{style.label}</span>
+                                                    <span className="mode-item-desc">{style.description}</span>
+                                                </div>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Agent Mode Dropdown */}
+                        <div className="mode-dropdown-container">
+                            <button
+                                className="mode-dropdown-trigger"
+                                onClick={() => { setShowModeDropdown(!showModeDropdown); setShowStyleDropdown(false); }}
+                            >
+                                {(() => {
+                                    const currentMode = CHAT_MODES.find(m => m.id === selectedMode);
+                                    const Icon = currentMode?.icon || Sparkles;
+                                    return (
+                                        <>
+                                            <Icon size={14} />
+                                            <span>{currentMode?.label || 'Auto'}</span>
+                                            <ChevronDown size={12} className={showModeDropdown ? 'rotated' : ''} />
+                                        </>
+                                    );
+                                })()}
+                            </button>
+                            {showModeDropdown && (
+                                <div className="mode-dropdown-menu">
+                                    {CHAT_MODES.map((mode) => {
+                                        const Icon = mode.icon;
+                                        return (
+                                            <button
+                                                key={mode.id}
+                                                className={`mode-dropdown-item ${selectedMode === mode.id ? 'active' : ''}`}
+                                                onClick={() => {
+                                                    setSelectedMode(mode.id);
+                                                    setShowModeDropdown(false);
+                                                }}
+                                            >
+                                                <Icon size={18} />
+                                                <div className="mode-item-text">
+                                                    <span className="mode-item-label">{mode.label}</span>
+                                                    <span className="mode-item-desc">{mode.description}</span>
+                                                </div>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                    </div>
                     <div className="chat-input-wrapper">
                         <input
                             type="text"
@@ -349,6 +469,19 @@ function ChatPage() {
                         <button onClick={handleSendMessage} disabled={isLoading || !inputValue.trim()}>
                             <Send size={20} />
                         </button>
+                        <VoiceButton
+                            onTranscript={(text, lang) => {
+                                setInputValue(text);
+                            }}
+                            onResponse={(text, lang) => {
+                                setMessages(prev => [...prev,
+                                { role: 'user', content: inputValue || '🎤 Voice input' },
+                                { role: 'assistant', content: text }
+                                ]);
+                                setInputValue('');
+                            }}
+                            position="inline"
+                        />
                     </div>
                     <p className="input-hint">
                         {SUPPORTED_LANGUAGES[selectedLanguage]?.flag} {SUPPORTED_LANGUAGES[selectedLanguage]?.name} • VEDA AI can make mistakes. Verify important information.
