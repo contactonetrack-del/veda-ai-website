@@ -74,7 +74,7 @@ function ProfilePage() {
                     </div>
 
                     {!user.isGuest && (
-                        <button className="edit-profile-btn">
+                        <button className="edit-profile-btn" onClick={() => navigate('/profile/edit')}>
                             Edit Profile
                         </button>
                     )}

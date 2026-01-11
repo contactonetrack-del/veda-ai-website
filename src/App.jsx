@@ -157,6 +157,7 @@ function App() {
   const AboutPage = lazy(() => import('./pages/AboutPage'));
   const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
   const TermsPage = lazy(() => import('./pages/TermsPage'));
+  const EditProfilePage = lazy(() => import('./pages/EditProfilePage'));
 
   return (
     <Suspense fallback={<div className="loading-screen">Loading...</div>}>
@@ -180,10 +181,16 @@ function App() {
             <ProfilePage />
           </ProtectedRoute>
         } />
+        <Route path="/profile/edit" element={
+          <ProtectedRoute>
+            <EditProfilePage />
+          </ProtectedRoute>
+        } />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
         <Route path="/terms" element={<TermsPage />} />
       </Routes>
+
     </Suspense>
   )
 }
