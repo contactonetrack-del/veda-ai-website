@@ -4,6 +4,11 @@ services:
     runtime: static
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://veda-ai-backend.onrender.com
+      - key: VITE_GROQ_API_KEY
+        sync: false
     routes:
       - type: rewrite
         source: /*

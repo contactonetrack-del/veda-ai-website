@@ -61,7 +61,7 @@ You can also assist with general knowledge questions outside your primary domain
 
 // Create the generative model with WORKING configuration from FitBlaze
 const model = genAI.getGenerativeModel({
-    model: 'gemini-2.5-flash',  // ✅ WORKING: 2026 model from Android app
+    model: 'gemini-1.5-flash',  // ✅ STABLE: Using gemini-1.5-flash
     systemInstruction: VEDA_SYSTEM_PROMPT,
 });
 

@@ -76,55 +76,67 @@ export function VoiceSettingsModal({ isOpen, onClose, settings, onSettingsChange
         onClose();
     };
 
-    const testVoice = () => {
-        if ('speechSynthesis' in window) {
-            // If already playing, stop it
-            if (testPlaying) {
-                window.speechSynthesis.cancel();
+    const testVoice = async () => {
+        if (testPlaying) {
+            window.speechSynthesis.cancel();
+            setTestPlaying(false);
+            return;
+        }
+
+        const persona = VOICE_PERSONAS.find(p => p.id === selectedPersona);
+        setTestPlaying(true);
+
+        try {
+            // Try Backend TTS first (High Quality)
+            // Dynamically import to avoid circular dependency issues if any
+            const { voiceService } = await import('../services/voiceService');
+
+            // Map persona to language code if needed, or just use English/Hindi default
+            // For now, we'll use English 'en' or Hindi 'hi' based on preference, or just 'hi' since our backend defaults to it
+            // Let's us 'hi' as Parler-TTS is optimized for Indian languages
+            const audio = await voiceService.synthesize(persona.testMsg, 'en');
+
+            audio.onended = () => setTestPlaying(false);
+            audio.onerror = () => {
+                console.warn('Backend TTS failed, falling back to Browser TTS');
+                fallbackToBrowserTTS();
+            };
+            await audio.play();
+
+        } catch (err) {
+            console.error('Backend TTS error:', err);
+            fallbackToBrowserTTS();
+        }
+
+        function fallbackToBrowserTTS() {
+            if (!('speechSynthesis' in window)) {
                 setTestPlaying(false);
                 return;
             }
 
             window.speechSynthesis.cancel();
-
-            const persona = VOICE_PERSONAS.find(p => p.id === selectedPersona);
             const utterance = new SpeechSynthesisUtterance(persona.testMsg);
 
-            // Get available voices and select based on gender
+            // ... (Existing browser TTS selection logic)
             const voices = window.speechSynthesis.getVoices();
-
-            // Find appropriate voice based on gender
             let selectedVoice = null;
             if (voiceGender === 'male') {
-                // Look for male voices (Indian English preferred)
                 selectedVoice = voices.find(v =>
                     v.name.toLowerCase().includes('male') ||
                     v.name.toLowerCase().includes('ravi') ||
-                    v.name.toLowerCase().includes('hemant') ||
-                    v.name.includes('David') ||
-                    v.name.includes('Mark')
+                    v.name.includes('David')
                 );
-                // Fallback: lower pitch for male effect
-                if (!selectedVoice) {
-                    utterance.pitch = Math.max(0.5, persona.pitch - 0.3);
-                }
+                if (!selectedVoice) utterance.pitch = Math.max(0.5, persona.pitch - 0.3);
             } else {
-                // Look for female voices
                 selectedVoice = voices.find(v =>
                     v.name.toLowerCase().includes('female') ||
                     v.name.toLowerCase().includes('heera') ||
-                    v.name.includes('Zira') ||
-                    v.name.includes('Samantha')
+                    v.name.includes('Zira')
                 );
-                if (!selectedVoice) {
-                    utterance.pitch = Math.min(1.5, persona.pitch + 0.1);
-                }
+                if (!selectedVoice) utterance.pitch = Math.min(1.5, persona.pitch + 0.1);
             }
 
-            if (selectedVoice) {
-                utterance.voice = selectedVoice;
-            }
-
+            if (selectedVoice) utterance.voice = selectedVoice;
             utterance.lang = 'en-IN';
             utterance.pitch = selectedVoice ? persona.pitch : utterance.pitch;
             utterance.rate = persona.rate;
@@ -226,7 +238,7 @@ export function VoiceSettingsModal({ isOpen, onClose, settings, onSettingsChange
 }
 
 // Compact trigger button for header
-export function VoiceSettingsButton({ onClick, gender }) {
+export function VoiceSettingsButton({ onClick }) {
     return (
         <button className="voice-settings-trigger" onClick={onClick} title="Voice Settings">
             <Volume2 size={20} />

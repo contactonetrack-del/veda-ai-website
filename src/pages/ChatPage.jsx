@@ -7,6 +7,7 @@ import LanguageSelector from '../components/LanguageSelector'
 import { SourcesCitation, AgentBadge } from '../components/SourcesCitation'
 import VoiceButton from '../components/VoiceButton'
 import { VoiceSettingsModal, VoiceSettingsButton } from '../components/VoiceSettings'
+import MemoryBank from '../components/MemoryBank'
 import {
     Menu,
     X,
@@ -28,7 +29,8 @@ import {
     ChevronDown,
     GraduationCap,
     Zap,
-    Lightbulb
+    Lightbulb,
+    Database
 } from 'lucide-react'
 import './ChatPage.css'
 
@@ -82,6 +84,7 @@ function ChatPage() {
     ])
     const [inputValue, setInputValue] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+    const [loadingText, setLoadingText] = useState('Thinking...') // Dynamic loading text
     const [selectedMode, setSelectedMode] = useState('auto') // Agent Mode
     const [showModeDropdown, setShowModeDropdown] = useState(false)
     const [conversationStyle, setConversationStyle] = useState('auto') // Conversation Style: auto/fast/planning
@@ -89,6 +92,7 @@ function ChatPage() {
 
     // Voice Settings
     const [showVoiceSettings, setShowVoiceSettings] = useState(false)
+    const [showMemory, setShowMemory] = useState(false)
     const [voiceSettings, setVoiceSettings] = useState(() => {
         const saved = localStorage.getItem('veda_voice_settings')
         return saved ? JSON.parse(saved) : { gender: 'female', persona: 'default' }
@@ -158,6 +162,19 @@ function ChatPage() {
         const currentInput = inputValue
         setInputValue('')
         setIsLoading(true)
+
+        // Dynamic Loading Text based on Intent
+        if (selectedMode === 'search') {
+            setLoadingText('🔎 Searching Web...')
+        } else if (selectedMode === 'wellness') {
+            setLoadingText('🧘 Consulting Wellness Expert...')
+        } else if (selectedMode === 'protection') {
+            setLoadingText('🛡️ Analyzing Policies...')
+        } else if (currentInput.toLowerCase().includes('news') || currentInput.toLowerCase().includes('latest') || currentInput.toLowerCase().includes('price')) {
+            setLoadingText('🔎 Searching & Thinking...')
+        } else {
+            setLoadingText('Thinking...')
+        }
 
         // Track guest messages
         if (user?.isGuest) {
@@ -344,11 +361,33 @@ function ChatPage() {
                             onClick={() => setShowVoiceSettings(true)}
                             gender={voiceSettings.gender}
                         />
+                        <button
+                            className="icon-btn memory-toggle"
+                            onClick={() => setShowMemory(!showMemory)}
+                            title="Memory Bank"
+                            style={{
+                                padding: '8px',
+                                borderRadius: '50%',
+                                background: showMemory ? 'rgba(88, 166, 255, 0.2)' : 'transparent',
+                                color: showMemory ? '#58a6ff' : '#8b949e',
+                                border: 'none',
+                                cursor: 'pointer',
+                                marginLeft: '8px'
+                            }}
+                        >
+                            <Database size={20} />
+                        </button>
                         <button className="icon-btn" onClick={() => navigate('/profile')} title="Profile">
                             <User size={20} />
                         </button>
                     </div>
                 </header>
+
+                {showMemory && (
+                    <div style={{ padding: '0 20px' }}>
+                        <MemoryBank user={user} />
+                    </div>
+                )}
 
                 <div className="messages-container">
                     {messages.map((msg, idx) => (
@@ -401,6 +440,7 @@ function ChatPage() {
                                 <div className="sender-name">VEDA AI</div>
                                 <div className="message-content loading-dots">
                                     <span></span><span></span><span></span>
+                                    <span className="loading-text" style={{ marginLeft: '10px', fontSize: '0.9em', color: '#888' }}>{loadingText}</span>
                                 </div>
                             </div>
                         </div>

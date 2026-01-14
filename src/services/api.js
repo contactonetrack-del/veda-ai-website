@@ -8,7 +8,7 @@
 const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const API_BASE_URL = isLocalDev
     ? 'http://localhost:8000'
-    : (import.meta.env.VITE_API_URL || 'https://veda-ai-backend-ql2b.onrender.com');
+    : (import.meta.env.VITE_API_URL || 'https://veda-ai-backend.onrender.com');
 const API_V1 = `${API_BASE_URL}/api/v1`;
 
 // Groq API for guest mode (same as mobile for consistency)
@@ -504,6 +504,24 @@ export async function getBrowserStatus() {
     return apiRequest('/browser/status');
 }
 
+// ==================== MEMORY API (Phase 5.3) ====================
+
+export async function getMemories(userId, limit = 50) {
+    return apiRequest(`/memory/?user_id=${userId}&limit=${limit}`);
+}
+
+export async function deleteMemory(userId, memoryId) {
+    return apiRequest(`/memory/${memoryId}?user_id=${userId}`, {
+        method: 'DELETE'
+    });
+}
+
+export async function clearMemory(userId) {
+    return apiRequest(`/memory/?user_id=${userId}`, {
+        method: 'DELETE'
+    });
+}
+
 export default {
     signup,
     login,
@@ -543,4 +561,8 @@ export default {
     // Browser Agent
     webSearch,
     getBrowserStatus,
+    // Memory
+    getMemories,
+    deleteMemory,
+    clearMemory
 };

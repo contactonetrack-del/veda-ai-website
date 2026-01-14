@@ -151,6 +151,39 @@ class VoiceService {
         const audio = new Audio(URL.createObjectURL(blob));
         audio.play().catch(err => console.error('Audio playback error:', err));
     }
+
+    /**
+     * Synthesize speech from text using Backend REST API
+     * @param {string} text - Text to speak
+     * @param {string} language - Language code (e.g., 'hi', 'en')
+     * @returns {Promise<HTMLAudioElement>} - Audio element ready to play
+     */
+    async synthesize(text, language = 'hi') {
+        try {
+            const API_URL = WS_URL.replace('ws://', 'http://').replace('wss://', 'https://').replace('/ws', '/synthesize');
+
+            // Construct query parameters
+            const params = new URLSearchParams({
+                text: text,
+                language: language
+            });
+
+            const response = await fetch(`${API_URL}?${params.toString()}`, {
+                method: 'POST',
+            });
+
+            if (!response.ok) {
+                throw new Error('TTS generation failed');
+            }
+
+            const blob = await response.blob();
+            const audio = new Audio(URL.createObjectURL(blob));
+            return audio;
+        } catch (error) {
+            console.error('Backend TTS Error:', error);
+            throw error;
+        }
+    }
 }
 
 // Singleton instance
